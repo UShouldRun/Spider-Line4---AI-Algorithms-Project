@@ -15,6 +15,7 @@ class Board:
     def get_rect(self): return self.rect
 
     def update(self, matrix) -> None: self.matrix = matrix
+    def place_piece(self, piece_type: str, move: tuple[int, int]) -> None: self.matrix[move[0],move[1]] = piece_type
     def set_rect(self, x: int, y: int, width: int, height: int) -> None: pygame.Rect(x,y,width,height)
 
 class Button:
@@ -29,13 +30,11 @@ class Button:
 
     def getSurface(self): return self.font.render(self.text, True, self.font_color)
     def getRect(self): return Rect(self.x, self.y, self.width, self.height)
-    def getClicked(self): return self.clicked
 
-    def isClicked(self, event) -> bool: pass
+    def isClicked(self, mouse) -> bool: return 0 <= mouse[0] - self.x <= self.width and 0 <= mouse[1] - self.y <= self.height
         
-    def setClicked(self, state: bool): self.clicked = state
-
     def draw(self) -> None:
         draw.rect(self.screen, self.color, self.getRect())
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
 
+class Clock: pass
