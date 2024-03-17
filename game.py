@@ -23,7 +23,7 @@ class SpiderLine4:
 
         # game state variables
         self.game_state = 0
-        self.turn = 0
+        self.turn = 1
 
         # board
         self.initialize_board()
