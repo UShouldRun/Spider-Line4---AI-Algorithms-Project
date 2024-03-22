@@ -49,5 +49,7 @@ BOARD_COLOR = COLORS["light_blue"]
 
 PLAYER_COLORS = {"1": COLORS["white"],"2": COLORS["black"]}
 
+FPS = 100
+
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption(TITLE)
