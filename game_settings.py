@@ -29,6 +29,8 @@ COLORS = {
     'light_green': (144, 238, 144),
     'light_gray': (211, 211, 211),
     'dark_gray': (169, 169, 169),
+    'light_wood': (220, 192, 139),
+    'dark_wood': (101, 67, 33)
 }
 
 BACKGROUND = COLORS["gray"]
@@ -42,10 +44,10 @@ MAIN_FONT = "comic sans"
 
 N, M = 8, 8
 SQUARE_SIZE = HEIGHT/M
-SQUARE_COLOR = COLORS["yellow"]
+SQUARE_COLOR = COLORS["light_wood"]
 
 BOARD_WIDTH, BOARD_HEIGHT = SQUARE_SIZE * M, SQUARE_SIZE * N
-BOARD_COLOR = COLORS["light_blue"]
+BOARD_COLOR = COLORS["dark_wood"]
 
 PLAYER_COLORS = {"1": COLORS["white"],"2": COLORS["black"]}
 

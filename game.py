@@ -12,7 +12,7 @@ class SpiderLine4:
 
         # menus
         self.current_state = 0 
-        self.states = {0: "main_menu", 1: "in_game"}
+        self.states = {0: "main_menu", 1: "in_game", 2: "win_label"}
 
         # mouse
         self.mouse_pos = [0,0]
@@ -22,6 +22,7 @@ class SpiderLine4:
 
         # play button
         self.play_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "PLAY", TEXT_SIZE, MAIN_FONT)
+        self.legal_moves_button = Button(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, HEIGHT//16, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, "DISPLAY MOVES", TEXT_SIZE//2, MAIN_FONT)
 
         # FPS
         self.ticks = 1000//FPS
@@ -31,6 +32,7 @@ class SpiderLine4:
         self.board = Board(N,M,WIDTH//2 - BOARD_WIDTH//2, HEIGHT//2 - BOARD_HEIGHT//2, BOARD_WIDTH, BOARD_HEIGHT)
         self.game_state = 0
         self.turn = 1
+        self.display_switch = True
 
         # entities
         self.selected_bot = 0
@@ -39,10 +41,17 @@ class SpiderLine4:
         self.player = Player(self.board, "1")
         self.player1 = self.player # by default the user is the player 1
 
+        # winning label
+        self.win_label_clock = 0
+        self.win_label_limit = 300
+        self.win_player = 0
+        self.win_font = pygame.font.SysFont(MAIN_FONT, TEXT_SIZE)
+
     def initialize_board(self) -> None:
         self.board = Board(N,M,WIDTH//2 - BOARD_WIDTH//2, HEIGHT//2 - BOARD_HEIGHT//2, BOARD_WIDTH, BOARD_HEIGHT)
         self.game_state = 0
         self.turn = 1
+        self.win_player = 0
         self.player.board = self.board
         for bot in self.bots: bot.board = self.board
 
@@ -62,6 +71,12 @@ class SpiderLine4:
     def set_turn(self, turn: int) -> None:
         '''Defines which player is playing.'''
         self.turn = turn
+    def get_display(self) -> bool:
+        '''Returns True if the user wants to see the possible legal moves on the board.'''
+        return self.display_switch
+    def set_display(self, state: bool = None) -> None:
+        if state is not None: self.display_switch = state
+        else: self.display_switch = not self.display_switch
 
     def isMouseClicked(self) -> bool: return self.mouse_clicked
     def get_mouse_pos(self) -> tuple: return self.mouse_pos
@@ -82,6 +97,9 @@ class SpiderLine4:
         '''Sets who is playing, the player or one of the bots.'''
         self.player1 = entity
 
+    def get_win_label_limit(self) -> int: return self.win_label_limit 
+    def get_win_player(self) -> int: return self.win_player
+
     def print_board(self) -> None:
         '''Testing purposes.'''
         for row in self.board.get_matrix(): print(row)
@@ -93,20 +111,27 @@ class SpiderLine4:
     def handle_events(self) -> None:
         '''Depending on which menu the user is, redefines variables to change the app state.'''
         match self.states[self.get_current_state()]:
+
             case "main_menu":
                 if self.play_button.isClicked(self.get_mouse_pos()) and self.isMouseClicked():
                     self.current_state = 1
                     self.mouse_switch()
+
             case "in_game":
                 if self.get_game_state() != 0:
-                    self.current_state = 0
-                    self.initialize_board()
-                if self.get_player1() == self.player and self.isMouseClicked() and self.get_turn() == int(self.player.getPiece()):
-                    board_pos = self.identify_board_click(self.get_mouse_pos())
-                    if board_pos in self.get_legal_moves():
-                        self.player.play(board_pos)
-                        self.check_game_status()
-                        self.set_turn(2)
+                    self.current_state = 2
+                    self.win_player = self.get_game_state()
+
+                if self.isMouseClicked():
+                    if self.legal_moves_button.isClicked(self.get_mouse_pos()): self.set_display()
+
+                    if self.get_player1() == self.player and self.get_turn() == int(self.player.getPiece()):
+                        board_pos = self.identify_board_click(self.get_mouse_pos())
+                        if board_pos in self.get_legal_moves():
+                            self.player.play(board_pos)
+                            self.check_game_status()
+                            self.set_turn(2)
+
                     self.mouse_switch()
 
     def get_inputs(self) -> None:
@@ -202,6 +227,24 @@ class SpiderLine4:
                 if (i+j)%2 == 0: pygame.draw.rect(self.screen, SQUARE_COLOR, pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE))
                 if self.board.get_matrix()[i,j] != "0": pygame.draw.circle(self.screen, PLAYER_COLORS[self.board.get_matrix()[i,j]], (x + SQUARE_SIZE//2, y + SQUARE_SIZE//2), SQUARE_SIZE//2)
 
+    def display_legal_moves(self) -> None:
+        for move in self.get_legal_moves():
+            pos = (self.board.get_rect().x + move[1] * SQUARE_SIZE + SQUARE_SIZE//4, self.board.get_rect().y + move[0] * SQUARE_SIZE + SQUARE_SIZE//4)
+            pygame.draw.line(self.screen, COLORS["green"], (pos[0], pos[1]), (pos[0] + SQUARE_SIZE//2, pos[1] + SQUARE_SIZE//2), 5)
+            pygame.draw.line(self.screen, COLORS["green"], (pos[0], pos[1] + SQUARE_SIZE//2), (pos[0] + SQUARE_SIZE//2, pos[1]), 5)
+
+    def draw_winning_label(self) -> None:
+        self.cleanScreen()
+        text = f"PLAYER {self.get_win_player()} WON" if self.get_win_player() != 3 else "DRAW"
+        label = self.win_font.render(text, True, COLORS["red"])
+        self.screen.blit(label, (WIDTH//2 - label.get_width()//2, HEIGHT//2 - label.get_height()//2))
+
+        if self.win_label_clock == self.win_label_limit:
+            self.win_label_clock = 0
+            self.current_state = 0
+            self.initialize_board()
+        elif self.timer == self.ticks: self.win_label_clock += 1
+
     def draw_chat(self) -> None: pass
     def draw_clocks(self) -> None: pass
 
@@ -212,6 +255,8 @@ class SpiderLine4:
     def draw_game(self) -> None:
         self.cleanScreen()
         self.draw_board()
+        if self.get_display(): self.display_legal_moves()
+        self.legal_moves_button.draw()
         self.draw_chat() # needs to be built
         self.draw_clocks() # needs to be built
 
@@ -219,6 +264,7 @@ class SpiderLine4:
         match self.states[self.get_current_state()]:
             case "main_menu": self.draw_main_menu()
             case "in_game": self.draw_game()
+            case "win_label": self.draw_winning_label()
 
     # main function
 
