@@ -12,7 +12,7 @@ class SpiderLine4:
 
         # menus
         self.current_state = 0 
-        self.states = {0: "main_menu", 1: "in_game", 2: "win_label"}
+        self.states = {0: "main_menu", 1: "game_modes", 2: "win_label", 3: "vscomp", 4: "normal", 5: "bot_vs_bot"}
 
         # mouse
         self.mouse_pos = [0,0]
@@ -43,9 +43,14 @@ class SpiderLine4:
 
         # winning label
         self.win_label_clock = 0
-        self.win_label_limit = 300
+        self.win_label_limit = 400
         self.win_player = 0
         self.win_font = pygame.font.SysFont(MAIN_FONT, TEXT_SIZE)
+
+        # game modes
+        self.normal_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - 2*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "NORMAL", TEXT_SIZE, MAIN_FONT)
+        self.hum_vs_bot_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "VS COMPUTER", TEXT_SIZE, MAIN_FONT)
+        self.bot_vs_bot_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "COMP VS COMP", TEXT_SIZE, MAIN_FONT)
 
     def initialize_board(self) -> None:
         self.board = Board(N,M,WIDTH//2 - BOARD_WIDTH//2, HEIGHT//2 - BOARD_HEIGHT//2, BOARD_WIDTH, BOARD_HEIGHT)
@@ -117,11 +122,7 @@ class SpiderLine4:
                     self.current_state = 1
                     self.mouse_switch()
 
-            case "in_game":
-                if self.get_game_state() != 0:
-                    self.current_state = 2
-                    self.win_player = self.get_game_state()
-
+            case "vscomp":
                 if self.isMouseClicked():
                     if self.legal_moves_button.isClicked(self.get_mouse_pos()): self.set_display()
 
@@ -133,6 +134,16 @@ class SpiderLine4:
                             self.set_turn(2)
 
                     self.mouse_switch()
+
+            case "game_modes":
+                if self.isMouseClicked():
+                    if self.hum_vs_bot_button.isClicked(self.get_mouse_pos()): self.current_state = 3
+                    elif self.normal_button.isClicked(self.get_mouse_pos()): pass
+                    elif self.bot_vs_bot_button.isClicked(self.get_mouse_pos()): pass
+
+        if self.get_game_state() != 0:
+            self.current_state = 2
+            self.win_player = self.get_game_state()
 
     def get_inputs(self) -> None:
         '''Loops over all pygame events and handles the events.'''
@@ -245,6 +256,12 @@ class SpiderLine4:
             self.initialize_board()
         elif self.timer == self.ticks: self.win_label_clock += 1
 
+    def draw_game_modes_menu(self) -> None:
+        self.cleanScreen()
+        self.normal_button.draw()
+        self.hum_vs_bot_button.draw()
+        self.bot_vs_bot_button.draw()
+
     def draw_chat(self) -> None: pass
     def draw_clocks(self) -> None: pass
 
@@ -263,7 +280,10 @@ class SpiderLine4:
     def draw(self) -> None:
         match self.states[self.get_current_state()]:
             case "main_menu": self.draw_main_menu()
-            case "in_game": self.draw_game()
+            case "game_modes": self.draw_game_modes_menu()
+            case "vscomp": self.draw_game()
+            case "normal": self.draw_game()
+            case "bot_vs_bot": self.draw_game()
             case "win_label": self.draw_winning_label()
 
     # main function
