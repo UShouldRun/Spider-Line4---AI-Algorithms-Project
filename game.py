@@ -39,7 +39,10 @@ class SpiderLine4:
         self.bots = [Bot0(self.board), Bot1(self.board), Bot2(self.board), Bot3(self.board)]
 
         self.player = Player(self.board, "1")
+        self.opponent = Player(self.board, "2")
+        self.users = [self.player, self.opponent]
         self.player1 = self.player # by default the user is the player 1
+        self.player2 = self.opponent # by default the second use is the player 2
 
         # winning label
         self.win_label_clock = 0
@@ -57,8 +60,8 @@ class SpiderLine4:
         self.game_state = 0
         self.turn = 1
         self.win_player = 0
-        self.player.board = self.board
-        for bot in self.bots: bot.board = self.board
+        for user in self.get_users(): user.board = self.board
+        for bot in self.get_bots(): bot.board = self.board
 
     def isRunning(self) -> bool:
         '''Returns True if the current game is still running.'''
@@ -89,11 +92,19 @@ class SpiderLine4:
         if state is not None: self.mouse_clicked = state 
         else: self.mouse_clicked = not self.mouse_clicked
 
+    def get_bots(self) -> list: return self.bots
     def get_selected_bot(self) -> int:
         '''Returns the current selected bot to play against the player. Notice that this returns player 2.'''
         return self.selected_bot
+    def set_selected_bot(self, bot: int) -> None: self.selected_bot = bot
+
+    def get_users(self, user: int = None):
+        '''Returns the list of users. If the variable user is set to a number bigger than 0, it will return the user indexed to that number minus 1.'''
+        if user is not None: return self.users[user - 1]
+        return self.users
+
     def get_player1(self): return self.player1
-    def get_player2(self): return self.bots[self.get_selected_bot()]
+    def get_player2(self): return self.player2
     def get_players(self) -> list:
         '''Returns a list with the player 1 and the player 2.'''
         return [self.get_player1(), self.get_player2()]
@@ -101,6 +112,10 @@ class SpiderLine4:
     def set_player1(self, entity) -> None:
         '''Sets who is playing, the player or one of the bots.'''
         self.player1 = entity
+    def set_player2(self, entity = None) -> None:
+        '''Sets the opponent, the second user or one of the bots. By default it's set to the selected bot.'''
+        if entity is not None: self.player2 = entity
+        else: self.player2 = self.bots[self.get_selected_bot()]
 
     def get_win_label_limit(self) -> int: return self.win_label_limit 
     def get_win_player(self) -> int: return self.win_player
@@ -115,6 +130,19 @@ class SpiderLine4:
 
     def handle_events(self) -> None:
         '''Depending on which menu the user is, redefines variables to change the app state.'''
+
+        def user_input(user: int) -> None:
+            if self.isMouseClicked():
+                if self.legal_moves_button.isClicked(self.get_mouse_pos()): self.set_display()
+
+                board_pos = self.identify_board_click(self.get_mouse_pos())
+                if board_pos in self.get_legal_moves():
+                    self.get_users(user).play(board_pos)
+                    self.check_game_status()
+                    self.set_turn(user%2 + 1)
+
+                self.mouse_switch()
+
         match self.states[self.get_current_state()]:
 
             case "main_menu":
@@ -122,24 +150,25 @@ class SpiderLine4:
                     self.current_state = 1
                     self.mouse_switch()
 
-            case "vscomp":
-                if self.isMouseClicked():
-                    if self.legal_moves_button.isClicked(self.get_mouse_pos()): self.set_display()
-
-                    if self.get_player1() == self.player and self.get_turn() == int(self.player.getPiece()):
-                        board_pos = self.identify_board_click(self.get_mouse_pos())
-                        if board_pos in self.get_legal_moves():
-                            self.player.play(board_pos)
-                            self.check_game_status()
-                            self.set_turn(2)
-
-                    self.mouse_switch()
-
             case "game_modes":
                 if self.isMouseClicked():
                     if self.hum_vs_bot_button.isClicked(self.get_mouse_pos()): self.current_state = 3
-                    elif self.normal_button.isClicked(self.get_mouse_pos()): pass
+                    elif self.normal_button.isClicked(self.get_mouse_pos()): self.current_state = 4
                     elif self.bot_vs_bot_button.isClicked(self.get_mouse_pos()): pass
+
+            case "normal":
+                self.set_player1(self.player)
+                self.set_player2(self.opponent)
+                user_input(self.get_turn())
+            
+            case "vscomp":
+                self.set_player2()
+                if self.get_turn() == int(self.get_users()[0].getPiece()): user_input(self.get_turn())
+                
+            case "bot_vs_bot":
+                # self.set_player1()
+                # self.set_player2()
+                pass
 
         if self.get_game_state() != 0:
             self.current_state = 2
@@ -210,7 +239,7 @@ class SpiderLine4:
         return moves
 
     def play(self) -> None:
-        if self.get_game_state() == 0:
+        if self.get_game_state() == 0 and self.get_current_state() != 4:
             match self.get_turn():
                 case 1:
                     if self.get_player1() != self.player:
