@@ -310,11 +310,9 @@ class SpiderLine4:
         match self.states[self.get_current_state()]:
             case "main_menu": self.draw_main_menu()
             case "game_modes": self.draw_game_modes_menu()
-            case "vscomp": self.draw_game()
-            case "normal": self.draw_game()
-            case "bot_vs_bot": self.draw_game()
             case "win_label": self.draw_winning_label()
-
+            case _: self.draw_game()
+                
     # main function
 
     def run(self) -> None:
