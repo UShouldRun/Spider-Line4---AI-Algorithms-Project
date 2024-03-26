@@ -36,7 +36,9 @@ class SpiderLine4:
 
         # entities
         self.selected_bot = 0
-        self.bots = [Bot0(self.board), Bot1(self.board), Bot2(self.board), Bot3(self.board)]
+        self.bots = [Bot0(self.board, "Alpha"), Bot1(self.board, "Beta"), Bot2(self.board, "Gamma"), Bot3(self.board, "Phi")]
+        self.bot1 = 0
+        self.bot2 = 1
 
         self.player = Player(self.board, "1")
         self.opponent = Player(self.board, "2")
@@ -55,11 +57,16 @@ class SpiderLine4:
         self.hum_vs_bot_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "VS COMPUTER", TEXT_SIZE, MAIN_FONT)
         self.bot_vs_bot_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "COMP VS COMP", TEXT_SIZE, MAIN_FONT)
 
+        self.select_bot1_button = Button(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, HEIGHT//16 + BUTTON_HEIGHT, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, self.text1, TEXT_SIZE//2, MAIN_FONT)
+        self.select_bot2_button = Button(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, HEIGHT//16 + 2*BUTTON_HEIGHT, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, self.text2, TEXT_SIZE//2, MAIN_FONT)
+
     def initialize_board(self) -> None:
         self.board = Board(N,M,WIDTH//2 - BOARD_WIDTH//2, HEIGHT//2 - BOARD_HEIGHT//2, BOARD_WIDTH, BOARD_HEIGHT)
         self.game_state = 0
         self.turn = 1
         self.win_player = 0
+        self.player1 = self.player
+        self.player2 = self.opponent
         for user in self.get_users(): user.board = self.board
         for bot in self.get_bots(): bot.board = self.board
 
@@ -92,11 +99,22 @@ class SpiderLine4:
         if state is not None: self.mouse_clicked = state 
         else: self.mouse_clicked = not self.mouse_clicked
 
-    def get_bots(self) -> list: return self.bots
+    def get_bots(self, bot: int = None) -> list:
+        if bot is not None: return self.bots[bot]
+        return self.bots
+    def get_bot1(self) -> int: return self.bot1
+    def get_bot2(self) -> int: return self.bot2
+    def set_bot1(self, bot: int) -> None: self.bot1 = bot
+    def set_bot2(self, bot: int) -> None: self.bot2 = bot
     def get_selected_bot(self) -> int:
         '''Returns the current selected bot to play against the player. Notice that this returns player 2.'''
         return self.selected_bot
     def set_selected_bot(self, bot: int) -> None: self.selected_bot = bot
+
+    def text1(self) -> str:
+        # print(self.get_bots(self.get_bot1()).get_name())
+        return self.get_bots(self.get_bot1()).get_name()
+    def text2(self) -> str: return self.get_bots(self.get_bot2()).get_name()
 
     def get_users(self, user: int = None):
         '''Returns the list of users. If the variable user is set to a number bigger than 0, it will return the user indexed to that number minus 1.'''
@@ -154,7 +172,7 @@ class SpiderLine4:
                 if self.isMouseClicked():
                     if self.hum_vs_bot_button.isClicked(self.get_mouse_pos()): self.current_state = 3
                     elif self.normal_button.isClicked(self.get_mouse_pos()): self.current_state = 4
-                    elif self.bot_vs_bot_button.isClicked(self.get_mouse_pos()): pass
+                    elif self.bot_vs_bot_button.isClicked(self.get_mouse_pos()): self.current_state = 5
 
             case "normal":
                 self.set_player1(self.player)
@@ -164,11 +182,15 @@ class SpiderLine4:
             case "vscomp":
                 self.set_player2()
                 if self.get_turn() == int(self.get_users()[0].getPiece()): user_input(self.get_turn())
+                if self.isMouseClicked() and self.select_bot1_button.isClicked(self.get_mouse_pos()): self.set_selected_bot((self.get_selected_bot() + 1)%len(self.get_bots()))
                 
             case "bot_vs_bot":
-                # self.set_player1()
-                # self.set_player2()
-                pass
+                if self.isMouseClicked():
+                    if self.select_bot1_button.isClicked(self.get_mouse_pos()): self.set_bot1((self.get_bot1() + 1)%len(self.get_bots()))
+                    if self.select_bot2_button.isClicked(self.get_mouse_pos()): self.set_bot2((self.get_bot2() + 1)%len(self.get_bots()))
+
+                self.set_player1(self.get_bots(self.get_bot1()))
+                self.set_player2(self.get_bots(self.get_bot2()))
 
         if self.get_game_state() != 0:
             self.current_state = 2
@@ -301,8 +323,16 @@ class SpiderLine4:
     def draw_game(self) -> None:
         self.cleanScreen()
         self.draw_board()
+        
         if self.get_display(): self.display_legal_moves()
         self.legal_moves_button.draw()
+
+        match self.states[self.get_current_state()]:
+            case "vscomp": self.select_bot1_button.draw()
+            case "bot_vs_bot":
+                self.select_bot1_button.draw()
+                self.select_bot2_button.draw()
+
         self.draw_chat() # needs to be built
         self.draw_clocks() # needs to be built
 
@@ -312,7 +342,7 @@ class SpiderLine4:
             case "game_modes": self.draw_game_modes_menu()
             case "win_label": self.draw_winning_label()
             case _: self.draw_game()
-                
+
     # main function
 
     def run(self) -> None:
