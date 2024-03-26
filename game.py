@@ -112,9 +112,12 @@ class SpiderLine4:
     def set_selected_bot(self, bot: int) -> None: self.selected_bot = bot
 
     def text1(self) -> str:
-        # print(self.get_bots(self.get_bot1()).get_name())
-        return self.get_bots(self.get_bot1()).get_name()
-    def text2(self) -> str: return self.get_bots(self.get_bot2()).get_name()
+        if type(self.get_player1()) == Player and type(self.get_player2()) == Player: return None
+        if self.get_player1() != self.player: return self.get_player1().get_name()
+        return self.get_player2().get_name()
+    def text2(self) -> str:
+        if type(self.get_player2()) == Player: return None
+        return self.get_player2().get_name()
 
     def get_users(self, user: int = None):
         '''Returns the list of users. If the variable user is set to a number bigger than 0, it will return the user indexed to that number minus 1.'''
@@ -173,6 +176,7 @@ class SpiderLine4:
                     if self.hum_vs_bot_button.isClicked(self.get_mouse_pos()): self.current_state = 3
                     elif self.normal_button.isClicked(self.get_mouse_pos()): self.current_state = 4
                     elif self.bot_vs_bot_button.isClicked(self.get_mouse_pos()): self.current_state = 5
+                    self.mouse_switch()
 
             case "normal":
                 self.set_player1(self.player)
@@ -180,14 +184,18 @@ class SpiderLine4:
                 user_input(self.get_turn())
             
             case "vscomp":
+                if self.isMouseClicked() and self.select_bot1_button.isClicked(self.get_mouse_pos()):
+                    self.set_selected_bot((self.get_selected_bot() + 1)%len(self.get_bots()))
+                    self.mouse_switch()
+                
                 self.set_player2()
                 if self.get_turn() == int(self.get_users()[0].getPiece()): user_input(self.get_turn())
-                if self.isMouseClicked() and self.select_bot1_button.isClicked(self.get_mouse_pos()): self.set_selected_bot((self.get_selected_bot() + 1)%len(self.get_bots()))
-                
+
             case "bot_vs_bot":
                 if self.isMouseClicked():
                     if self.select_bot1_button.isClicked(self.get_mouse_pos()): self.set_bot1((self.get_bot1() + 1)%len(self.get_bots()))
                     if self.select_bot2_button.isClicked(self.get_mouse_pos()): self.set_bot2((self.get_bot2() + 1)%len(self.get_bots()))
+                    self.mouse_switch()
 
                 self.set_player1(self.get_bots(self.get_bot1()))
                 self.set_player2(self.get_bots(self.get_bot2()))
