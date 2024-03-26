@@ -214,8 +214,8 @@ class SpiderLine4:
     def check_game_status(self) -> None:
         directions = [(-1,-1),(-1,0),(0,1),(1,1),(1,0),(0,-1),(1,-1),(-1,1)]
         for vector in directions:
-            if self.checkWin(self.board.get_matrix(),vector,self.turn): self.game_state = self.turn
-        if self.turn == 0 and self.checkDraw(self.board.get_matrix()): self.game_state = 3
+            if self.checkWin(self.board.get_matrix(),vector,self.get_turn()): self.game_state = self.get_turn()
+        if self.get_game_state() == 0 and self.checkDraw(self.board.get_matrix()): self.game_state = 3
 
     def checkWin(self, matrix, vector: tuple[int,int], turn: int) -> bool:
         def verify(i: int, j: int, vector: tuple[int,int], turn: int, count: int):
@@ -266,11 +266,12 @@ class SpiderLine4:
                 case 1:
                     if self.get_player1() != self.player:
                         self.get_player1().play("1", self.get_legal_moves)
+                        self.check_game_status()
                         self.set_turn(2)
                 case 2:
                     self.get_player2().play("2", self.get_legal_moves)
+                    self.check_game_status()
                     self.set_turn(1)
-            self.check_game_status()
 
     # Draw on the screen section
 
