@@ -44,7 +44,7 @@ class SpiderLine4:
         self.opponent = Player(self.board, "2")
         self.users = [self.player, self.opponent]
         self.player1 = self.player # by default the user is the player 1
-        self.player2 = self.opponent # by default the second use is the player 2
+        self.player2 = self.opponent # by default the second user is the player 2
 
         # winning label
         self.win_label_clock = 0
