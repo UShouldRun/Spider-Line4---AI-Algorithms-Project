@@ -269,7 +269,7 @@ class SpiderLine4:
         return moves
 
     def play(self) -> None:
-        if self.get_game_state() == 0 and self.get_current_state() != 4:
+        if self.get_game_state() == 0 and self.get_current_state() in {3,5}:
             match self.get_turn():
                 case 1:
                     if self.get_player1() != self.player:
