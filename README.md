@@ -1,7 +1,7 @@
 # SPIDERLINE4: AI Algorithms Project
 
 This folder is a project to explore different types of AI algorithms, like Minimax,
-Minimax with alpha-beta cuts and Monte Carlo search playing SpiderLine4.
+Minimax with alpha-beta cuts and Monte Carlo Tree Search playing SpiderLine4.
 
 The file that should be ran is "main.py".
 The bots' code is written inside the "bots.py".
