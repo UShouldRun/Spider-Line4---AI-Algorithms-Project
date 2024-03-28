@@ -10,7 +10,11 @@ All the code is free to use and experiment with, but this github account should 
 as wll as the other developers mencioned (johnpierre, ...).
 Project made by Henrique dos Santos Teixeira, João Pedro Gouveia Ferreira, Pedro Pereira.
 
-# DESCRIPTION OF SPIDER LINE 4 #
+# SPIDER LINE 4 #
+
+This game is based on the classic Connect4 game. But, instead of only being possible to
+place the pieces from bottom to top, we can place them from bottom to top, top to bottom,
+left to right and right to left. The first player to connect 4 pieces of their color wins.
 
 # AIM #
 
