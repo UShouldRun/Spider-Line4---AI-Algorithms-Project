@@ -8,9 +8,8 @@ The bots' code is written inside the "bots.py".
 
 - STATE OF THE PROJECT: ON GOING -
 
-All the code is free to use and experiment with, but this github account should be mencionned
-as wll as the other developers mencioned (johnpierre, ...).
-Project made by Henrique dos Santos Teixeira, João Pedro Gouveia Ferreira, Pedro Pereira.
+All the code is free to use and experiment with, but all github accounts stated bellow should be mencionned.
+Project made by Henrique dos Santos Teixeira (UShouldRun), João Pedro Gouveia Ferreira (johnpierre), Pedro Pereira (PedroPeras).
 
 # SPIDER LINE 4 #
 
