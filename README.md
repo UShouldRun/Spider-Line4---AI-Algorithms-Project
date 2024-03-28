@@ -1,4 +1,4 @@
-# Spider Line4 - AI Algorithms Project - U. Porto - IACD
+# Spider Line4 - AI Algorithms Project - U. Porto - Faculdade de Ciências - IACD
 
 This is a folder for a project to explore different types of AI algorithms, like minimax,
 minimax with alpha-beta cuts and monte carlo search playing Spider Line4.
