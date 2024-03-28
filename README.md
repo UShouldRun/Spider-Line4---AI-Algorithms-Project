@@ -1,20 +1,20 @@
-# SPIDER LINE 4 - AI Algorithms Project - FCUP - IACD
+# AI Algorithms Project: SPIDERLINE4
 
 This folder is a project to explore different types of AI algorithms, like Minimax,
-Minimax with alpha-beta cuts and Monte Carlo search playing Spider Line 4.
+Minimax with alpha-beta cuts and Monte Carlo search playing SpiderLine4.
 
 The file that should be ran is "main.py".
 The bots' code is written inside the "bots.py".
 
 # STATE: ON GOING
 
-# SPIDER LINE 4 #
+# THE GAME
 
-This game is based on the classic Connect4 game. But, instead of only being possible to
+SpiderLine4 is based on the classic Connect4 game. But, instead of only being possible to
 place the pieces from bottom to top, we can place them from bottom to top, top to bottom,
 left to right and right to left. The first player to connect 4 pieces of their color wins.
 
-# AIM #
+# AIM
 
 In this work, the aim is to implement a game for two players and solve different versions of this game,
 using the Minimax search algorithm with αβ cuts and its variants.
