@@ -4,7 +4,7 @@ This folder is a project to explore different types of AI algorithms, like Minim
 Minimax with αβ cuts cuts and Monte Carlo Tree Search playing SpiderLine4.
 
 The file that should be ran is "main.py".
-The bots' code is written inside the "bots.py".
+The different algorithms' code are written inside "bots.py".
 
 # THE GAME
 
