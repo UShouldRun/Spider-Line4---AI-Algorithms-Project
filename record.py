@@ -5,7 +5,7 @@ class Record:
     def __init__(self, check_game_status, coordinates, get_turn, check_player_move):
         '''This constructor initializes the attributes of the class instance with functions that are used to manage and track the state of a game. 
         Each function is passed as an argument to the constructor and is expected to perform a specific role related to the game mechanics.
-        Chek_game_status, coordinates and get_turn, return integer values. Check_player_move returns boolean value ''' 
+        chek_game_status, coordinates and get_turn, return integer values. check_player_move returns a boolean value ''' 
         self.current_game = None 
         
         #functions
