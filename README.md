@@ -1,4 +1,4 @@
-# AI Algorithms Project: SPIDERLINE4
+# SPIDERLINE4: AI Algorithms Project
 
 This folder is a project to explore different types of AI algorithms, like Minimax,
 Minimax with alpha-beta cuts and Monte Carlo search playing SpiderLine4.
