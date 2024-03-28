@@ -6,10 +6,7 @@ Minimax with alpha-beta cuts and Monte Carlo search playing Spider Line 4.
 The file that should be ran is "main.py".
 The bots' code is written inside the "bots.py".
 
-- STATE OF THE PROJECT: ON GOING -
-
-All the code is free to use and experiment with, but all github accounts stated bellow should be mencionned.
-Project made by Henrique dos Santos Teixeira (UShouldRun), João Pedro Gouveia Ferreira (johnpierre), Pedro Pereira (PedroPeras).
+# STATE OF THE PROJECT: ON GOING
 
 # SPIDER LINE 4 #
 
@@ -31,3 +28,5 @@ Monte Carlo Tree Search with different configurations will also be used.
 
 We are going to focus on the analysis of the results of the computer players (wins, draws, losses, and other quality
 parameters, such as the number of plays to obtain the win/loss) and average time spent to obtain the plays.
+
+# Open Source Project Credits: Attribution to GitHub Contributors
