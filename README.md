@@ -1,8 +1,10 @@
-# Spider Line4 - AI Algorithms Project - U. Porto - Faculdade de Ciências - IACD
+# SPIDER LINE 4 - AI Algorithms Project - FCUP - IACD
 
-This is a folder for a project to explore different types of AI algorithms, like minimax,
-minimax with alpha-beta cuts and monte carlo search playing Spider Line4.
-The file that should be ran is "main.py". The bots' code is written inside the "bots.py".
+This folder is a project to explore different types of AI algorithms, like Minimax,
+Minimax with alpha-beta cuts and Monte Carlo search playing Spider Line 4.
+
+The file that should be ran is "main.py".
+The bots' code is written inside the "bots.py".
 
 - STATE OF THE PROJECT: ON GOING -
 
