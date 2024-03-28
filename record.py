@@ -43,13 +43,14 @@ class Record:
     def record(self):
         ''' Function responsible for managing the progression of the game: starting a new game if needed, 
         recording moves if the game is ongoing and the player has made a move, 
-        and ending the game if it's over or if the player hasn't made a move. '''
+        and ending the game if it's over. '''
         
         if self.get_current_game() is None and self.check_game_status() == 0:        
             self.set_current_game(self.new_game()) 
         if self.set_current_game() is not None:  
-            if self.check_game_status() == 0 and self.check_player_move():  
-                self.record_move(self.current_game, player = f'Player {self.get_turn()}' , coordinates = self.coordinates(), move_time = datetime.datetime.now())
+            if self.check_game_status() == 0:  
+                if self.check_player_move():
+                    self.record_move(self.current_game, player = f'Player {self.get_turn()}' , coordinates = self.coordinates(), move_time = datetime.datetime.now())
             else:
                 self.end_game(self.get_current_game(), winner = f'Player {self.get_turn()}') 
                 self.set_current_game(None) 
