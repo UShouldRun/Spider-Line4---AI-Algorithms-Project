@@ -35,8 +35,7 @@ class Record:
     def record_move(self, game_record, player, coordinates: str, move_time):
         '''Function to record a move in the game'''
         game_record['moves'].append({'player': player, 'column': coordinates, 'time': move_time})
-
-
+        
     def end_game(self, game_record, winner):
         '''Function to end the game and record the winner'''
         game_record['winner'] = winner
