@@ -12,6 +12,8 @@ Project made by Henrique dos Santos Teixeira, João Pedro Gouveia Ferreira, Pedr
 
 # DESCRIPTION OF SPIDER LINE 4 #
 
+# AIM #
+
 In this work, the aim is to implement a game for two players and solve different versions of this game,
 using the Minimax search algorithm with αβ cuts and its variants.
 
