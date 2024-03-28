@@ -1,4 +1,4 @@
-from game_settings import *
+from settings import *
 from bots import Bot0, Bot1, Bot2, Bot3
 from player import Player
 from objects import Board, Button, Clock
