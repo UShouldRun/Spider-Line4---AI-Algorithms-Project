@@ -2,7 +2,6 @@ from settings import *
 from bots import Bot0, Bot1, Bot2, Bot3
 from player import Player
 from objects import Board, Button, Clock
-from copy import deepcopy
 
 class SpiderLine4:
     def __init__(self) -> None:
