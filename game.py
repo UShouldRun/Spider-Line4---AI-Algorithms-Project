@@ -301,7 +301,7 @@ class SpiderLine4:
         return True
 
     def get_legal_moves(self, board: Board = None) -> list[tuple[int,int]]:
-        if board is None: board = self.board.get_matrix()
+        if board is None: board = self.board
         moves = []
         
         for i in {0, board.get_rows() - 1}:
