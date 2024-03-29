@@ -300,24 +300,25 @@ class SpiderLine4:
                 if entry == "0": return False
         return True
 
-    def get_legal_moves(self) -> list[tuple[int,int]]:
-
+    def get_legal_moves(self, board: Board = None) -> list[tuple[int,int]]:
+        if board is None: board = self.board.get_matrix()
         moves = []
-        for i in {0, self.board.get_rows() - 1}:
-            for j in range(self.board.get_columns()):
-                for k in range(0, self.board.get_rows(), 1):
+        
+        for i in {0, board.get_rows() - 1}:
+            for j in range(board.get_columns()):
+                for k in range(0, board.get_rows(), 1):
                     if i > 0: k = -k
                     if (i+k,j) in moves: break
-                    if self.board.get_matrix()[i+k,j] == "0":
+                    if board.get_matrix()[i+k,j] == "0":
                         moves.append((i+k,j))
                         break
 
-        for j in {0, self.board.get_columns() - 1}:
-            for i in range(1, self.board.get_rows() - 1):
-                for k in range(0, self.board.get_columns()):
+        for j in {0, board.get_columns() - 1}:
+            for i in range(1, board.get_rows() - 1):
+                for k in range(0, board.get_columns()):
                     if j > 0: k = -k
                     if (i,j+k) in moves: break
-                    if self.board.get_matrix()[i,j+k] == "0":
+                    if board.get_matrix()[i,j+k] == "0":
                         moves.append((i,j+k))
                         break
 
