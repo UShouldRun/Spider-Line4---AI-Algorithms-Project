@@ -12,7 +12,7 @@ class SpiderLine4:
 
         # menus
         self.current_state = 0 
-        self.states = {0: "main_menu", 1: "game_modes", 2: "win_label", 3: "vscomp", 4: "normal", 5: "bot_vs_bot", 6: "vscomp_ingame"}
+        self.states = {0: "main_menu", 1: "game_modes", 2: "win_label", 3: "vscomp", 4: "normal", 5: "bot_vs_bot", 6: "vscomp_ingame", 7: "bot_vs_bot_ingame"}
 
         # mouse
         self.mouse_pos = [0,0]
@@ -60,8 +60,9 @@ class SpiderLine4:
         self.hum_vs_bot_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "VS COMPUTER", TEXT_SIZE, MAIN_FONT)
         self.bot_vs_bot_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "COMP VS COMP", TEXT_SIZE, MAIN_FONT)
 
-        self.select_bot1_button = Button(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, HEIGHT//16 + BUTTON_HEIGHT, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, self.text1, TEXT_SIZE//2, MAIN_FONT)
-        self.select_bot2_button = Button(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, HEIGHT//16 + 2*BUTTON_HEIGHT, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, self.text2, TEXT_SIZE//2, MAIN_FONT)
+        self.select_bot1_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - 2*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.text1, TEXT_SIZE, MAIN_FONT)
+        self.select_bot2_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.text2, TEXT_SIZE, MAIN_FONT)
+        self.bot_vs_bot_start_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "START", TEXT_SIZE, MAIN_FONT)
  
         self.min_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - 2*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "MinMax", TEXT_SIZE, MAIN_FONT)
         self.min_ab_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "MinMax AB", TEXT_SIZE, MAIN_FONT)
@@ -242,14 +243,24 @@ class SpiderLine4:
                 self.set_player2()
                 if self.get_turn() == int(self.get_users()[0].getPiece()): user_input(self.get_turn())
 
-            # work later on this one
             case "bot_vs_bot":
                 if self.isMouseClicked():
-                    if self.select_bot1_button.isClicked(self.get_mouse_pos()): self.set_bot1((self.get_bot1() + 1)%len(self.get_bots()))
-                    elif self.select_bot2_button.isClicked(self.get_mouse_pos()): self.set_bot2((self.get_bot2() + 1)%len(self.get_bots()))
-                    elif self.exit_button.isClicked(self.get_mouse_pos()):
-                        self.current_state = 1
-                        self.initialize_board()
+                    if self.select_bot1_button.isClicked(self.get_mouse_pos()):
+                        self.set_bot1((self.get_bot1() + 1)%len(self.get_bots()))
+                    elif self.select_bot2_button.isClicked(self.get_mouse_pos()):
+                        self.set_bot2((self.get_bot2() + 1)%len(self.get_bots()))
+                    elif self.bot_vs_bot_start_button.isClicked(self.get_mouse_pos()):
+                        self.current_state = 7
+                    elif self.back_button.isClicked(self.get_mouse_pos()): self.current_state = 1
+                    self.mouse_switch()
+
+                self.set_player1(self.get_bots(self.get_bot1()))
+                self.set_player2(self.get_bots(self.get_bot2()))
+
+            case "bot_vs_bot_ingame":
+                if self.isMouseClicked() and self.exit_button.isClicked(self.get_mouse_pos()):
+                    self.current_state = 1
+                    self.initialize_board()
                     self.mouse_switch()
 
                 self.set_player1(self.get_bots(self.get_bot1()))
@@ -325,7 +336,7 @@ class SpiderLine4:
         return moves
 
     def play(self) -> None:
-        if self.get_game_state() == 0 and self.get_current_state() in {5,6}:
+        if self.get_game_state() == 0 and self.get_current_state() in {6,7}:
             match self.get_turn():
                 case 1:
                     if self.get_player1() != self.player:
@@ -386,6 +397,13 @@ class SpiderLine4:
         self.monte_carlo_button.draw()
         self.back_button.draw()
 
+    def draw_bot_vs_bot_select_menu(self) -> None:
+        self.cleanScreen()
+        self.select_bot1_button.draw()
+        self.select_bot2_button.draw()
+        self.bot_vs_bot_start_button.draw()
+        self.back_button.draw()
+
     def draw_chat(self) -> None: pass
     def draw_clocks(self) -> None:
         self.clock1.draw()
@@ -402,11 +420,6 @@ class SpiderLine4:
         if self.get_display(): self.display_legal_moves()
         self.legal_moves_button.draw()
 
-        match self.states[self.get_current_state()]:
-            case "bot_vs_bot":
-                self.select_bot1_button.draw()
-                self.select_bot2_button.draw()
-
         if self.get_current_state() == 4: self.draw_clocks()
         self.exit_button.draw()
 
@@ -418,6 +431,7 @@ class SpiderLine4:
             case "game_modes": self.draw_game_modes_menu()
             case "win_label": self.draw_winning_label()
             case "vscomp": self.draw_bot_select_menu()
+            case "bot_vs_bot": self.draw_bot_vs_bot_select_menu()
             case _: self.draw_game()
 
     # main function
