@@ -34,7 +34,7 @@ SpiderLine4 is based on the classic Connect4 game. But, instead of only being po
 place the pieces from bottom to top, we can place them from bottom to top, top to bottom,
 left to right and right to left. The first player to connect 4 pieces of their color wins.
 
-# Project Aim
+# Project's Aim
 
 In this work, the aim is to implement a game for two players and solve different versions of this game,
 using different AI algorithms. 
