@@ -1,8 +1,10 @@
-# SPIDERLINE4: AI Project - STATE: ON GOING
+# SPIDERLINE4: AI Project
 
 This folder is a project to explore different types of AI algorithms, like Minimax,
 Minimax with αβ cuts cuts and Monte Carlo Tree Search playing SpiderLine4.
 The different algorithms' code is present in "bots.py".
+
+ - State: ongoing;
 
 # Download and Project Execution
 To download this repository and explore the code, make sure you have git installed and type in the terminal:
