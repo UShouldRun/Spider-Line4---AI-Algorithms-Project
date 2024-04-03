@@ -6,7 +6,7 @@ Minimax with αβ cuts cuts and Monte Carlo Tree Search playing SpiderLine4.
 The file that should be ran is "main.py".
 The different algorithms' code are written inside "bots.py".
 
-# DOWNLOAD REPOSITORY
+# DOWNLOAD REPOSITORY AND PROJECT EXECUTION
 To download this repository and explore the code, make sure you have git installed and type in the terminal:
 ```
 $ git clone https://github.com/UShouldRun/spiderline4
@@ -25,7 +25,7 @@ To run the project, make sure the following steps are/were done:
       $ pip install pygame
       ```
 
-With all have that done, we should be good to go. So now run in the terminal the following:
+With all have that done, we should be good to run the project. So now run in the terminal the following:
 ```
 $ python3 main.py
 ```
