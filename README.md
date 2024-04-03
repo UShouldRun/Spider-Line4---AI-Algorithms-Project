@@ -4,7 +4,7 @@ This folder is a project to explore different types of AI algorithms, like Minim
 Minimax with αβ cuts cuts and Monte Carlo Tree Search playing SpiderLine4.
 The different algorithms' code is present in "bots.py".
 
-# DOWNLOAD REPOSITORY AND PROJECT EXECUTION
+# Download and Project Execution
 To download this repository and explore the code, make sure you have git installed and type in the terminal:
 ```
 $ git clone https://github.com/UShouldRun/spiderline4
@@ -28,13 +28,13 @@ With all have that done, we should be good to run the project. So now run in the
 $ python3 main.py
 ```
 
-# THE GAME
+# The Game
 
 SpiderLine4 is based on the classic Connect4 game. But, instead of only being possible to
 place the pieces from bottom to top, we can place them from bottom to top, top to bottom,
 left to right and right to left. The first player to connect 4 pieces of their color wins.
 
-# AIM
+# Project Aim
 
 In this work, the aim is to implement a game for two players and solve different versions of this game,
 using different AI algorithms. 
