@@ -12,13 +12,13 @@ To download this repository and explore the code, make sure you have git install
 $ git clone https://github.com/UShouldRun/spiderline4
 ```
 To run the project, make sure the following steps are/were done:
-    - installed one of the latest versions of python (3.10 should be enough);
+- installed one of the latest versions of python (3.10 should be enough);
       if not type in your terminal the equivalent to mine on ubuntu:
       ```
       $ sudo apt update
       $ sudo apt install python3.11
       ```
-    - installed pygame;
+- installed pygame;
       if not lets install pip in case you haven't yet:
       ```
       $ sudo apt install python3-pip
