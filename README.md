@@ -28,7 +28,7 @@ With all have that done, we should be good to run the project. So now run in the
 $ python3 main.py
 ```
 
-# The Game
+# Game
 
 SpiderLine4 is based on the classic Connect4 game. But, instead of only being possible to
 place the pieces from bottom to top, we can place them from bottom to top, top to bottom,
