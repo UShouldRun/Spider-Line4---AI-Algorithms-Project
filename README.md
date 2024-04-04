@@ -1,4 +1,4 @@
-# SPIDERLINE4: AI Project
+# SpiderLine4: AI Project
 
 This repository is a project to explore and study the following types of AI algorithms: Minimax,
 Minimax with αβ cuts cuts and Monte Carlo Tree Search playing the game SpiderLine4.
