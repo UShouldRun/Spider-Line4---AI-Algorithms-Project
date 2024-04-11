@@ -1,8 +1,9 @@
-from pygame import Rect, draw, font
+from pygame import Rect, draw, font, transform
 from copy import deepcopy
+from settings import BUTTON_IMAGE, CLOCK_IMAGE
+from collections import defaultdict
 import numpy as np
 import time, threading
-from collections import defaultdict
 
 class Board:
     def __init__(self, n, m, x, y, width, height) -> None:
@@ -42,7 +43,8 @@ class Button:
     def isClicked(self, mouse) -> bool: return 0 <= mouse[0] - self.x <= self.width and 0 <= mouse[1] - self.y <= self.height
         
     def draw(self) -> None:
-        draw.rect(self.screen, self.color, self.getRect())
+        # draw.rect(self.screen, self.color, self.getRect())
+        self.screen.blit(transform.scale(BUTTON_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
 
 class Clock(): 
@@ -118,7 +120,8 @@ class Clock():
     def getRect(self): return Rect(self.x, self.y, self.width, self.height)
 
     def draw(self) -> None:
-        draw.rect(self.screen, self.color, self.getRect())
+        # draw.rect(self.screen, self.color, self.getRect())
+        self.screen.blit(transform.scale(CLOCK_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
 
 class Node:

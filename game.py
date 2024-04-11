@@ -384,7 +384,9 @@ class SpiderLine4:
         '''Resizes all objects in case the game enters full screen or goes to the default state.'''
         pass
 
-    def cleanScreen(self) -> None: self.screen.fill(BACKGROUND)
+    def cleanScreen(self) -> None:
+        self.screen.fill(BACKGROUND)
+        self.screen.blit(BG_IMAGE, (-0.15 * WIDTH, -0.15 * HEIGHT))
 
     def draw_board(self) -> None:
         '''Draws a background. Loops over all the board positions and draws the colored squares on even i + j positions. If a place is on the board, then the code recognizes and draws a circle on that position.'''
