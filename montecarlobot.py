@@ -43,9 +43,9 @@ class MCTS:
 
             n_parent = node.get_parent().get_visits()
             n_i = node.get_visits()
-            v_i = node.get_reward()/n_i
 
             if n_i == 0: return float("inf")
+            v_i = node.get_reward()/n_i
 
             if self.mdp.get_const() > 0:
                 if n_i > 1: return v_i + self.mdp.get_const() * sqrt(log(n_parent)/log(n_i))
@@ -98,20 +98,38 @@ class MCTS:
                 reward = self.simulate(leaf)
                 self.backpropagate(leaf, reward)
 
-        self.watch_moves(root)
+        self.watch_stats(root)
+        # self.draw_graph(root)
         return root
 
-    def watch_moves(self, root) -> None:
-        for child in root.get_children(): print(f"Node {child.get_id()}/{child.get_generation()}: {child.get_reward()}/{child.get_visits()}")
+    def watch_stats(self, root) -> None:
+        # for child in root.get_children(): print(f"Node {child.get_id()}/{child.get_generation()}: {child.get_reward()}/{child.get_visits()}")
+        print(f"Total explored nodes: {len(self.get_explored_children().keys())}")
+        print(f"Total created nodes: {Node.next_node_id - 1}")
         print("-----------------//----------------")
 
-    def draw_graph(self) -> None:
-        graph = nx.Graph()
-        edges = [(node.get_parent().get_id(), node.get_id()) for node in self.get_explored_children().keys() if not node.is_root() and node.get_generation() < 5]
-        graph.add_edges_from(edges)
-        plt.figure(figsize=(20, 12))
-        nx.draw(graph, with_labels=True, node_color='skyblue', node_size=100, font_size=8, arrows=True)
-        plt.show()
+    def draw_graph(self, root) -> None:
+        # Function to recursively add nodes and edges to the graph
+        print("loading tree...")
+        def add_nodes_edges(G, node, pos=None, level=0):
+            if pos is None:
+                pos = {node.get_id(): (level, 0)}
+
+            for child in node.get_children():
+                G.add_edge(node.get_id(), child.get_id())
+                pos[child.get_id()] = (level + 1, len(G) + 1)
+                if child.get_generation() < 2:
+                    add_nodes_edges(G, counter, child, pos, level + 1)
+
+        # Function to draw the tree graph
+        def draw_tree(root):
+            G = nx.DiGraph()
+            add_nodes_edges(G, root)
+            pos = nx.spring_layout(G, seed=42)
+            nx.draw(G, pos, with_labels=True, arrows=True)
+            plt.show()
+
+        draw_tree(root)
 
     def play(self, piece) -> None:
         self.mdp.action_type = piece

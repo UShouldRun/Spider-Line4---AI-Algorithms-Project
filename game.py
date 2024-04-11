@@ -63,7 +63,7 @@ class SpiderLine4:
             for move in self.get_legal_moves(node.get_state()): actions.append((piece, move))
             return actions
         mdp = MDP(get_actions, state_analysis, execute, qfunction, 2)
-        TIME, MAX_NODES = 1, 500
+        TIME, MAX_NODES = 1, 1000
 
         self.bots = [Bot0(self.board, "Alpha"), Bot1(self.board, "MiniMax"), Bot2(self.board, "MiniMax AlphaBeta"), MCTS(self.board, "Monte Carlo", TIME, MAX_NODES, mdp)]
         self.bot1 = 0
