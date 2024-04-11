@@ -19,6 +19,10 @@ class Board:
     def place_piece(self, piece_type: str, move: tuple[int, int]) -> None: self.matrix[move[0],move[1]] = piece_type
     def set_rect(self, x: int, y: int, width: int, height: int) -> None: pygame.Rect(x,y,width,height)
 
+    @staticmethod
+    def place(board, piece_type: str, move: tuple[int, int]) -> None:
+        board.matrix[move[0],move[1]] = piece_type
+
 class Button:
     def __init__(self, screen, x: int, y: int, width: int, height: int, color: tuple[int,int,int], font_color: tuple[int,int,int], text: str, text_size: int, _font: str) -> None:
         self.screen = screen

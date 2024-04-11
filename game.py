@@ -1,5 +1,9 @@
 from settings import *
-from bots import Bot0, Bot1, Bot2, Bot3
+from bots import Bot0, Bot1, Bot2
+
+from montecarlobot import MCTS, MDP, deepcopy
+from node import Node
+
 from player import Player
 from objects import Board, Button, Clock
 
@@ -38,7 +42,30 @@ class SpiderLine4:
 
         # entities
         self.selected_bot = 0
-        self.bots = [Bot0(self.board, "Alpha"), Bot1(self.board, "Beta"), Bot2(self.board, "Gamma"), Bot3(self.board, "Phi")]
+
+        def state_analysis(node: Node) -> int:
+            if node.is_root(): return False
+            directions = [(-1,-1),(-1,0),(0,1),(1,1),(1,0),(0,-1),(1,-1),(-1,1)]
+            for vector in directions:
+                if self.checkWin(node.get_state().get_matrix(), vector, node.get_action()[0]): True
+            return False
+        def qfunction(node: Node) -> int:
+            if not state_analysis(node): return 0.5
+            return 0 if node.get_action()[0] == "1" else 1
+        def execute(node: Node, action) -> Node:
+            new_state = deepcopy(node.get_state())
+            Board.place(new_state, action[0], action[1])
+            return Node(new_state, node, action)
+        def get_actions(node: Node, start_piece: str) -> list[tuple[str, tuple[int, int]]]:
+            if node.is_root(): piece = start_piece
+            else: piece = "1" if node.get_action()[0] == "2" else "2"
+            actions = []
+            for move in self.get_legal_moves(node.get_state()): actions.append((piece, move))
+            return actions
+        mdp = MDP(get_actions, state_analysis, execute, qfunction, 2)
+        TIME, MAX_NODES = 1, 500
+
+        self.bots = [Bot0(self.board, "Alpha"), Bot1(self.board, "MiniMax"), Bot2(self.board, "MiniMax AlphaBeta"), MCTS(self.board, "Monte Carlo", TIME, MAX_NODES, mdp)]
         self.bot1 = 0
         self.bot2 = 1
 
@@ -339,11 +366,13 @@ class SpiderLine4:
             match self.get_turn():
                 case 1:
                     if self.get_player1() != self.player:
-                        self.get_player1().play("1", self.get_legal_moves)
+                        try: self.get_player1().play("1", self.get_legal_moves)
+                        except: self.get_player1().play("1")
                         self.check_game_status()
                         self.set_turn(2)
                 case 2:
-                    self.get_player2().play("2", self.get_legal_moves)
+                    try: self.get_player2().play("2", self.get_legal_moves)
+                    except: self.get_player2().play("2")
                     self.check_game_status()
                     self.set_turn(1)
 
