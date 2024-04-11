@@ -131,12 +131,9 @@ class MCTS:
                 reward = self.simulate(leaf)
                 self.backpropagate(leaf, reward)
 
-        self.watch_stats(root)
-        # self.draw_graph(root)
         return root
 
     def watch_stats(self, root) -> None:
-        # for child in root.get_children(): print(f"Node {child.get_id()}/{child.get_generation()}: {child.get_reward()}/{child.get_visits()}")
         print(f"Total explored nodes: {len(self.get_explored_children().keys())}")
         print(f"Total created nodes: {Node.next_node_id - 1}")
         print("-----------------//----------------")
