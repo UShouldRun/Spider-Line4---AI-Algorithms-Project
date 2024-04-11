@@ -7,8 +7,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 class MCTS:
-    def __init__(self, root, name, delta_time, max_nodes, mdp) -> None:
-        self.name = name
+    def __init__(self, root, delta_time, max_nodes, mdp) -> None:
         self.root_state = root
         self.delta_time, self.cp = delta_time, max_nodes
         self.mdp = mdp
