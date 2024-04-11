@@ -17,11 +17,12 @@ To run the project, make sure the following steps are/were done:
       $ sudo apt update
       $ sudo apt install python3.11
       ```
- - installed pygame;
+ - installed pygame and numpy;
       if not lets install pip in case you haven't yet:
       ```
       $ sudo apt install python3-pip
       $ pip install pygame
+      $ pip install numpy
       ```
 
 With all have that done, we should be good to run the project. So now run in the terminal the following:
