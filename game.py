@@ -1,11 +1,9 @@
+from copy import deepcopy
 from settings import *
-from bots import Bot0, Bot1, Bot2
-
-from montecarlobot import MCTS, MDP, deepcopy
-from node import Node
-
+from bots import Bot0, Bot1, Bot2, Bot3
+from markovdecisionprocess import MDP
 from player import Player
-from objects import Board, Button, Clock
+from objects import Board, Button, Clock, Node
 
 class SpiderLine4:
     def __init__(self) -> None:
@@ -65,7 +63,7 @@ class SpiderLine4:
         mdp = MDP(get_actions, state_analysis, execute, qfunction, 2)
         TIME, MAX_NODES = 1, 1000
 
-        self.bots = [Bot0(self.board, "Alpha"), Bot1(self.board, "MiniMax"), Bot2(self.board, "MiniMax AlphaBeta"), MCTS(self.board, "Monte Carlo", TIME, MAX_NODES, mdp)]
+        self.bots = [Bot0(self.board, "Alpha"), Bot1(self.board, "MiniMax"), Bot2(self.board, "MiniMax AlphaBeta"), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, mdp)]
         self.bot1 = 0
         self.bot2 = 1
 
@@ -108,7 +106,6 @@ class SpiderLine4:
         self.player2 = self.opponent
         for user in self.get_users(): user.board = self.board
         for bot in self.get_bots(): bot.board = self.board
-        self.get_bots()[3].root_state = self.board
 
         self.clock1.kill()
         self.clock2.kill()
