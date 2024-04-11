@@ -23,7 +23,7 @@ class MCTS:
         get_start() -> int: Returns the start time of the search.
         get_delta_time() -> int: Returns the time limit for search.
         get_time() -> int: Returns the current time.
-        get_cp() -> int: Returns the exploration constant.
+        get_cp() -> int: Returns the "computer power" limit.
         get_explored_children() -> dict[Node]: Returns the dictionary of explored children.
         resources_left(time, comp_power) -> bool: Checks if resources are left for search.
         create_root_node(state, action) -> Node: Creates the root node.
