@@ -14,7 +14,7 @@ class MCTS:
     Attributes:
         root_state: The initial state of the MDP.
         delta_time: The time limit for search in seconds.
-        cp: The exploration constant.
+        cp: The "computer power" limit.
         mdp: The Markov Decision Process (MDP) environment.
 
     Methods:
