@@ -41,14 +41,16 @@ class SpiderLine4:
         # entities
         self.selected_bot = 0
 
-        def state_analysis(node: Node) -> int:
+        def game_state(node: Node) -> int:
             if node.is_root(): return False
             directions = [(-1,-1),(-1,0),(0,1),(1,1),(1,0),(0,-1),(1,-1),(-1,1)]
             for vector in directions:
-                if self.checkWin(node.get_state().get_matrix(), vector, node.get_action()[0]): True
-            return False
+                if self.checkWin(node.get_state().get_matrix(), vector, node.get_action()[0]): return 1
+                if self.checkDraw(node.get_state().get_matrix()): return 2
+            return 0
+        def state_analysis(node: Node) -> bool: return game_state(node) != 0
         def qfunction(node: Node) -> int:
-            if not state_analysis(node): return 0.5
+            if game_state(node) == 2: return 0.5
             return 0 if node.get_action()[0] == "1" else 1
         def execute(node: Node, action) -> Node:
             new_state = deepcopy(node.get_state())
@@ -60,10 +62,10 @@ class SpiderLine4:
             actions = []
             for move in self.get_legal_moves(node.get_state()): actions.append((piece, move))
             return actions
-        mdp = MDP(get_actions, state_analysis, execute, qfunction, 2)
-        TIME, MAX_NODES = 1, 1000
+        mdp = MDP(get_actions, state_analysis, execute, qfunction)
+        TIME, MAX_NODES, UCT_CONST = 1, 1000, 2
 
-        self.bots = [Bot0(self.board, "Alpha"), Bot1(self.board, "MiniMax"), Bot2(self.board, "MiniMax AlphaBeta"), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, mdp)]
+        self.bots = [Bot0(self.board, "Alpha"), Bot1(self.board, "MiniMax"), Bot2(self.board, "MiniMax AlphaBeta"), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, UCT_CONST, mdp)]
         self.bot1 = 0
         self.bot2 = 1
 
