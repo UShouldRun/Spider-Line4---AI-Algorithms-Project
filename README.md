@@ -12,7 +12,7 @@ $ git clone https://github.com/UShouldRun/spiderline4
 ```
 To run the project, make sure the following steps are/were done:
  - installed one of the latest versions of python (3.10 should be enough);
-      if not type in your terminal the equivalent to mine on ubuntu:
+      if not type in your terminal the equivalent to this distribution of Linux (Ubuntu):
       ```
       $ sudo apt update
       $ sudo apt install python3.11
