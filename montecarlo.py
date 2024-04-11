@@ -39,9 +39,10 @@ class MCTS:
         draw_graph(root) -> None: Draws the tree graph.
     """
     
-    def __init__(self, root, delta_time, max_nodes, mdp) -> None:
+    def __init__(self, root, delta_time: int, max_nodes: int, uct_const: int, mdp) -> None:
         self.root_state = root
         self.delta_time, self.cp = delta_time, max_nodes
+        self.uct_const = uct_const
         self.mdp = mdp
         self.reset()
 
@@ -54,6 +55,7 @@ class MCTS:
     def get_delta_time(self) -> int: return self.delta_time
     def get_time(self) -> int: return time()
     def get_cp(self) -> int: return self.cp
+    def get_uct_const(self) -> int: return self.uct_const
     def get_explored_children(self) -> dict[Node]: return self.explored_children
 
     def resources_left(self, time: int, comp_power: int): return time < self.get_start() + self.get_delta_time() and comp_power <= self.get_cp()
