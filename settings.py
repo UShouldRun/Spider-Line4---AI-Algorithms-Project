@@ -8,8 +8,8 @@ RESIZE_FACTOR = 0.75
 WIDTH, HEIGHT = RESIZE_FACTOR * monitor.width, RESIZE_FACTOR * monitor.height
 TITLE = "SpiderLine4"
 
-SIZE = 36
-MAIN_FONT = pygame.font.SysFont("comic sans",SIZE)
+SIZE = 50
+MAIN_FONT = pygame.font.SysFont("comic sans", SIZE)
 
 COLORS = {
     'black': (0, 0, 0),
@@ -30,15 +30,16 @@ COLORS = {
     'light_gray': (211, 211, 211),
     'dark_gray': (169, 169, 169),
     'light_wood': (220, 192, 139),
-    'dark_wood': (101, 67, 33)
+    'dark_wood': (101, 67, 33),
+    'beige': (245, 245, 220)
 }
 
 BACKGROUND = COLORS["gray"]
 
 BUTTON_WIDTH, BUTTON_HEIGHT = WIDTH//4, HEIGHT//5
-BUTTON_COLOR = COLORS["dark_gray"]
+BUTTON_COLOR = COLORS["dark_wood"]
 
-FONT_COLOR = COLORS["white"]
+FONT_COLOR = COLORS["beige"]
 TEXT_SIZE = int(BUTTON_WIDTH//8)
 MAIN_FONT = "comic sans"
 
@@ -52,6 +53,10 @@ BOARD_COLOR = COLORS["dark_wood"]
 PLAYER_COLORS = {"1": COLORS["white"],"2": COLORS["black"]}
 
 FPS = 100
+
+BG_IMAGE = pygame.transform.scale(pygame.image.load("resources/assets/PNG/UI board Large  parchment.png"), (WIDTH * 1.25, HEIGHT * 1.25))
+BUTTON_IMAGE = pygame.image.load("resources/assets/PNG/TextBTN_Medium.png")
+CLOCK_IMAGE = pygame.image.load("resources/assets/PNG/UI board Small  stone.png")
 
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption(TITLE)
