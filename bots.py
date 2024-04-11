@@ -1,8 +1,5 @@
-from random import randint, choice
+from random import randint
 from copy import deepcopy
-from node import Node
-from time import time
-from math import pow
 from montecarlo import MCTS
 
 class Bot0:

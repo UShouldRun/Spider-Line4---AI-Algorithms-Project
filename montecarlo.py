@@ -18,7 +18,6 @@ class MCTS:
         self.start = 0
         Node.reset()
 
-    def get_name(self) -> str: return self.name
     def get_start(self) -> int: return self.start
     def get_delta_time(self) -> int: return self.delta_time
     def get_time(self) -> int: return time()
