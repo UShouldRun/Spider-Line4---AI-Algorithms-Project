@@ -25,7 +25,7 @@ class Bot3(MCTS):
     def get_name(self) -> str: return self.name
     def play(self, piece) -> None:
         self.mdp.action_type = piece
-        move = self.uct_select(self.mcts(), True).get_action()[1]
+        move = self.uct_select(self.mcts()).get_action()[1]
         self.board.place_piece(piece, move)
         self.reset()
 
