@@ -30,6 +30,9 @@ With all have that done, we should be good to run the project. So now run in the
 $ python3 main.py
 ```
 
+- While playing, the user can choose to play against another person (NORMAL), a computer algorithm (VS COMP) or watch algorithms compete
+  with one another (COMP VS COMP). 
+
 # Game
 
 SpiderLine4 is based on the classic Connect4 game. But, instead of only being possible to
