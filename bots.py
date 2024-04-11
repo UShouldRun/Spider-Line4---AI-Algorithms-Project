@@ -22,9 +22,10 @@ class Bot2:
 
 class Bot3(MCTS):
     def __init__(self, board, name, max_time, max_mem, mdp) -> None:
-        super().__init__(board, name, max_time, max_mem, mdp)
+        super().__init__(board, max_time, max_mem, mdp)
         self.board = self.root_state
-
+        self.name = name
+    def get_name(self) -> str: return self.name
     def play(self, piece) -> None:
         self.mdp.action_type = piece
         move = self.uct_select(self.mcts(), True).get_action()[1]
