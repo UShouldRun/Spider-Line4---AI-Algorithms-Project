@@ -140,6 +140,8 @@ class Node:
         self.id = Node.next_node_id
         Node.next_node_id += 1
 
+    def __str__(self) -> str: return f"Node (Id/Gen): {self.get_id()}/{self.get_generation()}; State: {self.get_state()}; Parent: {self.get_parent()}; Children: {set([child.get_id() for child in self.get_children()])}; Reward: {self.get_reward()}; Visits: {self.get_visits()}"
+
     def is_root(self) -> bool: return self.get_parent() == None
 
     def get_id(self) -> int: return self.id

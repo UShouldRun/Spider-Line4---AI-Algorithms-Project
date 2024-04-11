@@ -39,8 +39,6 @@ class SpiderLine4:
         self.display_switch = True
 
         # entities
-        self.selected_bot = 0
-
         def game_state(node: Node) -> int:
             if node.is_root(): return False
             directions = [(-1,-1),(-1,0),(0,1),(1,1),(1,0),(0,-1),(1,-1),(-1,1)]
@@ -52,6 +50,7 @@ class SpiderLine4:
         def qfunction(node: Node) -> int:
             if game_state(node) == 2: return 0.5
             return 0 if node.get_action()[0] == "1" else 1
+        def qfunction1(node: Node) -> int: return 0 if node.get_action()[0] == "1" else 1
         def execute(node: Node, action) -> Node:
             new_state = deepcopy(node.get_state())
             Board.place(new_state, action[0], action[1])
@@ -63,11 +62,14 @@ class SpiderLine4:
             for move in self.get_legal_moves(node.get_state()): actions.append((piece, move))
             return actions
         mdp = MDP(get_actions, state_analysis, execute, qfunction)
+        mdp1 = MDP(get_actions, state_analysis, execute, qfunction1)
         TIME, MAX_NODES, UCT_CONST = 1, 1000, 2
+        MAX_DEPTH = 3
 
-        self.bots = [Bot0(self.board, "Alpha"), Bot1(self.board, "MiniMax"), Bot2(self.board, "MiniMax AlphaBeta"), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, UCT_CONST, mdp)]
+        self.bots = [Bot0(self.board, "Random"), Bot1(self.board, "NegaMax", MAX_DEPTH, mdp1), Bot2(self.board, "MiniMax AlphaBeta"), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, UCT_CONST, mdp)]
         self.bot1 = 0
         self.bot2 = 1
+        self.selected_bot = 0
 
         self.player = Player(self.board, "1")
         self.opponent = Player(self.board, "2")
@@ -90,9 +92,9 @@ class SpiderLine4:
         self.select_bot2_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.text2, TEXT_SIZE, MAIN_FONT)
         self.bot_vs_bot_start_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "START", TEXT_SIZE, MAIN_FONT)
  
-        self.min_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - 2*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "MinMax", TEXT_SIZE, MAIN_FONT)
-        self.min_ab_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "MinMax AB", TEXT_SIZE, MAIN_FONT)
-        self.monte_carlo_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "Monte Carlo", TEXT_SIZE, MAIN_FONT)
+        self.min_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - 2*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.get_bots()[1].get_name(), TEXT_SIZE, MAIN_FONT)
+        self.min_ab_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.get_bots()[2].get_name(), TEXT_SIZE, MAIN_FONT)
+        self.monte_carlo_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.get_bots()[3].get_name(), TEXT_SIZE, MAIN_FONT)
 
         # Clocks
         self.clock1 = Clock(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, HEIGHT//8 + 2*BUTTON_HEIGHT, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, self.get_clock1(), TEXT_SIZE//2, MAIN_FONT)
