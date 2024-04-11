@@ -69,7 +69,7 @@ class MCTS:
         if not children: return
         return choice(children)
 
-    def uct_select(self, node: Node, key: bool = False) -> Node:
+    def uct_select(self, node: Node) -> Node:
         '''Select a child of node, balancing exploration & exploitation'''
         def uct(node) -> float:
             if node.get_parent().get_visits() == 0: raise ValueError("Parent node has 0 visits")
