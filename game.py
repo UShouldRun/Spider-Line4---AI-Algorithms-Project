@@ -108,6 +108,7 @@ class SpiderLine4:
         self.player2 = self.opponent
         for user in self.get_users(): user.board = self.board
         for bot in self.get_bots(): bot.board = self.board
+        self.get_bots()[3].root_state = self.board
 
         self.clock1.kill()
         self.clock2.kill()
