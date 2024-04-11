@@ -7,6 +7,38 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 class MCTS:
+
+    """
+    Class for Monte Carlo Tree Search (MCTS) algorithm.
+
+    Attributes:
+        root_state: The initial state of the MDP.
+        delta_time: The time limit for search in seconds.
+        cp: The exploration constant.
+        mdp: The Markov Decision Process (MDP) environment.
+
+    Methods:
+        __init__(root, delta_time, max_nodes, mdp): Initializes the MCTS object.
+        reset(): Resets the MCTS object.
+        get_start() -> int: Returns the start time of the search.
+        get_delta_time() -> int: Returns the time limit for search.
+        get_time() -> int: Returns the current time.
+        get_cp() -> int: Returns the exploration constant.
+        get_explored_children() -> dict[Node]: Returns the dictionary of explored children.
+        resources_left(time, comp_power) -> bool: Checks if resources are left for search.
+        create_root_node(state, action) -> Node: Creates the root node.
+        find_direct_children(node) -> list[Node]: Finds the direct children of a node.
+        find_random_direct_child(node) -> Node: Finds a random direct child of a node.
+        uct_select(node, key) -> Node: Selects a child node using UCT algorithm.
+        select(starting_node) -> Node: Finds an unexplored descendent of a node.
+        expand(node) -> None: Expands the children of a node.
+        backpropagate(node, reward) -> None: Backpropagates the reward information in the tree.
+        simulate(starting_node) -> float: Simulates a certain universe from a starting branch (node) state.
+        mcts(root) -> Node: Runs the MCTS algorithm.
+        watch_stats(root) -> None: Prints statistics of the MCTS search.
+        draw_graph(root) -> None: Draws the tree graph.
+    """
+    
     def __init__(self, root, delta_time, max_nodes, mdp) -> None:
         self.root_state = root
         self.delta_time, self.cp = delta_time, max_nodes
