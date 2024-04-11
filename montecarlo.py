@@ -80,7 +80,7 @@ class MCTS:
             if n_i == 0: return float("inf")
             v_i = node.get_reward()/n_i
 
-            if self.mdp.get_const() > 0:
+            if self.get_uct_const() > 0:
                 if n_i > 1: return v_i + self.get_uct_const() * sqrt(log(n_parent)/log(n_i))
                 else: return float("inf")
             return v_i
