@@ -54,4 +54,4 @@ parameters, such as the number of plays to obtain the win/loss) and average time
 
 All the code is free to use and experiment with, but all github accounts stated bellow should be mencionned.
 
-Project made by Henrique Teixeira (UShouldRun), João Ferreira (johnpierre), Pedro Pereira (PedroPeras).
+Project made by Henrique Teixeira (UShouldRun), João Ferreira (johnpierrre), Pedro Pereira (PedroPeras).
