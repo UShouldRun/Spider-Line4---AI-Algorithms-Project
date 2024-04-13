@@ -39,6 +39,7 @@ class Button:
         text = self.text() if type(self.text) != str else self.text
         return self.font.render(text, True, self.font_color)
     def getRect(self): return Rect(self.x, self.y, self.width, self.height)
+    def set_rect(self, x: int, y: int, width: int, height: int) -> None: self.x, self.y, self.width, self.height = x, y, width, height
 
     def isClicked(self, mouse) -> bool: return 0 <= mouse[0] - self.x <= self.width and 0 <= mouse[1] - self.y <= self.height
         
@@ -118,6 +119,7 @@ class Clock():
 
     def getSurface(self): return self.font.render(self.text, True, self.font_color)
     def getRect(self): return Rect(self.x, self.y, self.width, self.height)
+    def set_rect(self, x: int, y: int, width: int, height: int) -> None: self.x, self.y, self.width, self.height = x, y, width, height
 
     def draw(self) -> None:
         # draw.rect(self.screen, self.color, self.getRect())

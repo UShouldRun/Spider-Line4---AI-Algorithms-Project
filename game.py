@@ -1,7 +1,8 @@
 from copy import deepcopy
 from settings import *
+from mdp import MDP
+from mdpfunctions import state_analysis, get_actions, execute, qfunction, qfunction1
 from bots import Bot0, Bot1, Bot2, Bot3
-from markovdecisionprocess import MDP
 from player import Player
 from objects import Board, Button, Clock, Node
 
@@ -38,35 +39,18 @@ class SpiderLine4:
         self.turn = 1
         self.display_switch = True
 
-        # entities
-        def game_state(node: Node) -> int:
-            if node.is_root(): return False
-            directions = [(-1,-1),(-1,0),(0,1),(1,1),(1,0),(0,-1),(1,-1),(-1,1)]
-            for vector in directions:
-                if self.checkWin(node.get_state().get_matrix(), vector, node.get_action()[0]): return 1
-                if self.checkDraw(node.get_state().get_matrix()): return 2
-            return 0
-        def state_analysis(node: Node) -> bool: return game_state(node) != 0
-        def qfunction(node: Node) -> int:
-            if game_state(node) == 2: return 0.5
-            return 0 if node.get_action()[0] == "1" else 1
-        def qfunction1(node: Node) -> int: return 0 if node.get_action()[0] == "1" else 1
-        def execute(node: Node, action) -> Node:
-            new_state = deepcopy(node.get_state())
-            Board.place(new_state, action[0], action[1])
-            return Node(new_state, node, action)
-        def get_actions(node: Node, start_piece: str) -> list[tuple[str, tuple[int, int]]]:
-            if node.is_root(): piece = start_piece
-            else: piece = "1" if node.get_action()[0] == "2" else "2"
-            actions = []
-            for move in self.get_legal_moves(node.get_state()): actions.append((piece, move))
-            return actions
-        mdp = MDP(get_actions, state_analysis, execute, qfunction)
-        mdp1 = MDP(get_actions, state_analysis, execute, qfunction1)
-        TIME, MAX_NODES, UCT_CONST = 1, 1000, 2
-        MAX_DEPTH = 3
+        def state(node: Node): return state_analysis(node, self.checkWin, self.checkDraw)
+        def actions(node: Node, piece: str): return get_actions(node, piece, self.get_legal_moves)
+        def qfunction2(node: Node): return qfunction(node, self.checkWin, self.checkDraw)
 
-        self.bots = [Bot0(self.board, "Random"), Bot1(self.board, "NegaMax", MAX_DEPTH, mdp1), Bot2(self.board, "MiniMax AlphaBeta"), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, UCT_CONST, mdp)]
+        # entities
+        mdp = MDP(actions, state, execute, qfunction2)
+        mdp1 = MDP(actions, state, execute, qfunction1)
+        mdp2 = MDP(actions, state, execute, qfunction1)
+        TIME, MAX_NODES, UCT_CONST = 1, 1000, 2
+        MAX_DEPTH = 2
+
+        self.bots = [Bot0(self.board, "Random"), Bot1(self.board, "NegaMax", MAX_DEPTH, mdp2), Bot2(self.board, "MiniMax AlphaBeta", MAX_DEPTH, mdp1), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, UCT_CONST, mdp)]
         self.bot1 = 0
         self.bot2 = 1
         self.selected_bot = 0
@@ -79,7 +63,7 @@ class SpiderLine4:
 
         # winning label
         self.win_label_clock = 0
-        self.win_label_limit = 400
+        self.win_label_limit = 200
         self.win_player = 0
         self.win_font = pygame.font.SysFont(MAIN_FONT, TEXT_SIZE)
 
@@ -382,7 +366,9 @@ class SpiderLine4:
 
     def resize(self) -> None:
         '''Resizes all objects in case the game enters full screen or goes to the default state.'''
-        pass
+        for obj in self.get_objects():
+            if self.get_full_screen(): obj.setRect(obj.x, obj.y, obj.width * FULL_SCREEN_WIDTH // WIDTH, obj.height * FULL_SCREEN_HEIGHT // HEIGHT)
+            else: obj.setRect(obj.x, obj.y, obj.width * WIDTH // FULL_SCREEN_WIDTH , obj.height * HEIGHT // FULL_SCREEN_HEIGHT )
 
     def cleanScreen(self) -> None:
         self.screen.fill(BACKGROUND)

@@ -15,21 +15,19 @@ class Negamax:
         negamax(root) -> Node: Runs the Negamax algorithm.
     """
 
-    def __init__(self, root, max_depth: int, mdp) -> None:
+    def __init__(self, root, depth: int, mdp) -> None:
         self.root_state = root
-        self.max_depth = max_depth
+        self.depth = depth
         self.mdp = mdp
-        self.expanded_children = dict()
 
     def create_root(self, state, action) -> Node: return Node(state, None, action)
 
     def expand(self, node) -> None:
         node.set_children([self.mdp.execute(node,action) for action in self.mdp.get_actions(node)])
         if not node.get_children(): return
-        self.expanded_children[node] = node.get_children()
 
     def grow_tree(self, node: Node, iteration: int = 0) -> None:
-        if iteration == self.max_depth or not self.mdp.non_terminal(node):
+        if iteration == self.depth or not self.mdp.non_terminal(node):
             node.increase_reward(self.mdp.qfunction(node))
             return
         self.expand(node)

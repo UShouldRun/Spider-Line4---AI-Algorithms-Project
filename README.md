@@ -12,26 +12,22 @@ $ git clone https://github.com/UShouldRun/spiderline4
 ```
 To run the project, make sure the following steps are/were done:
  - installed one of the latest versions of python (3.10 should be enough);
-      if not type in your terminal the equivalent to this distribution of Linux (Ubuntu):
+      if not type in your terminal the equivalent to mine on ubuntu:
       ```
       $ sudo apt update
       $ sudo apt install python3.11
       ```
- - installed pygame and numpy;
+ - installed pygame;
       if not lets install pip in case you haven't yet:
       ```
       $ sudo apt install python3-pip
       $ pip install pygame
-      $ pip install numpy
       ```
 
 With all have that done, we should be good to run the project. So now run in the terminal the following:
 ```
 $ python3 main.py
 ```
-
-- While playing, the user can choose to play against another person (NORMAL), a computer algorithm (VS COMP) or watch algorithms compete
-  with one another (COMP VS COMP). 
 
 # Game
 
@@ -56,6 +52,6 @@ parameters, such as the number of plays to obtain the win/loss) and average time
 
 # Open Source Project Credits
 
-All the code is free to use and experiment with, but all github accounts stated bellow should be mencioned.
+All the code is free to use and experiment with, but all github accounts stated bellow should be mencionned.
 
 Project made by Henrique Teixeira (UShouldRun), João Ferreira (johnpierre), Pedro Pereira (PedroPeras).

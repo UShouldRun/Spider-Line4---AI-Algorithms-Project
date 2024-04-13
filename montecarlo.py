@@ -1,6 +1,5 @@
 from objects import Node
 from time import time
-from copy import deepcopy
 from random import choice
 from math import sqrt, log
 # import networkx as nx
@@ -121,7 +120,7 @@ class MCTS:
         return self.mdp.qfunction(node)
 
     def mcts(self, root: Node = None) -> Node:
-        if root == None: root = self.create_root_node(deepcopy(self.root_state), (self.mdp.action_type, None))
+        if root == None: root = self.create_root_node(self.root_state, (self.mdp.action_type, None))
 
         self.start = time()
         while self.resources_left(self.get_time(), len(self.get_explored_children().keys())):
