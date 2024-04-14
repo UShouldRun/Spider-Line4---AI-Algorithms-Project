@@ -20,6 +20,9 @@ class Negamax:
         self.root_sign = root_sign
         self.nodes_depth = 0
 
+    def reset(self) -> None:
+        self.nodes_depth = 0
+        Node.reset()
     def create_root(self, state, action) -> Node: return Node(state, None, action)
 
     def expand(self, node) -> None:
@@ -51,6 +54,7 @@ class Negamax:
         return
 
     def negamax(self, root_action: str, root: Node = None) -> Node:
+        self.reset()
         if root == None: root = self.create_root(self.root_state, (root_action, None))
         self.grow_tree(root)
         self.evaluate_tree(root, self.root_sign)

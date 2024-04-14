@@ -53,7 +53,7 @@ def heuristic(matrix, piece: str):
 
     return score
 
-def heuristic1(matrix, piece: str, opponent: str, weight: int = 1, player1_weight: int = 1.5, neighbourhood_weight: int = 2, center_weight: float = .5, player_prox_weight: float = 1) -> float: 
+def heuristic1(matrix, piece: str, opponent: str, weight: float = 0.5, player1_weight: float = 1.05, player1_offset: float = .1, neighbourhood_weight: float = 2, center_weight: float = .5, player_prox_weight: float = 1) -> float: 
     rows, cols = len(matrix), len(matrix[0])
 
     def center_prox(i: int, j: int) -> float: return center_weight * sqrt((rows/2)**2 + (cols/2)**2) - sqrt((rows/2 - i)**2 + (cols/2 - j)**2)
@@ -95,10 +95,10 @@ def heuristic1(matrix, piece: str, opponent: str, weight: int = 1, player1_weigh
             if entry != "0":
                 heuristic_eval += (-1 if entry == opponent else 1) * (neighbourhood(i,j) + center_prox(i,j) + player_prox(i,j))
 
-    if piece == "1": return round(player1_weight * weight * heuristic_eval, 3)
+    if piece == "1": return round(player1_weight * weight * heuristic_eval + player1_offset, 3)
     return round(weight * heuristic_eval / 10, 3)
 
-def heuristic2(matrix, piece: str, opponent: str, weight: int = 1.5, player1_weight: int = 1.5, neighbourhood_weight: int = 2, center_weight: float = 1, player_prox_weight: float = 10) -> float: 
+def heuristic2(matrix, piece: str, opponent: str, weight: float = .5, player1_weight: float = 1.05, player1_offset: float = .1, neighbourhood_weight: float = 2, center_weight: float = 0.5, player_prox_weight: float = 1) -> float: 
     rows, cols = len(matrix), len(matrix[0])
 
     def center_prox(i: int, j: int) -> float: return center_weight * sqrt((rows/2)**2 + (cols/2)**2) - sqrt((rows/2 - i)**2 + (cols/2 - j)**2)

@@ -7,6 +7,9 @@ class AlphaBeta:
         self.depth = depth
         self.nodes_depth = 0
 
+    def reset(self) -> None:
+        self.nodes_depth = 0
+        Node.reset()
     def get_depth(self) -> int: return self.depth
     def create_root(self, state, action) -> Node:
         return Node(state, None, action)
@@ -59,6 +62,7 @@ class AlphaBeta:
         return node.get_reward()
 
     def minimax(self, root_action: str, root: Node = None) -> Node:
+        self.reset()
         if root == None: root = self.create_root(self.root_state, (root_action, None))
         self.max_value(root, -float("inf"), float("inf"))
         self.watch_stats(root)
