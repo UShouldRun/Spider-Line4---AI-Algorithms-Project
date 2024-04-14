@@ -29,6 +29,7 @@ class Negamax:
     def grow_tree(self, node: Node, iteration: int = 0) -> None:
         if not self.mdp.non_terminal(node):
             node.reward = float("inf")
+            self.nodes_depth += 1
             return
         if iteration == self.depth:
             node.increase_reward(self.mdp.qfunction(node))
@@ -53,5 +54,10 @@ class Negamax:
         if root == None: root = self.create_root(self.root_state, (root_action, None))
         self.grow_tree(root)
         self.evaluate_tree(root, self.root_sign)
-        print(self.nodes_depth)
+        self.watch_stats()
         return root
+
+    def watch_stats(self, root) -> None:
+        print(f"Total explored nodes: {self.nodes_depth}")
+        print(f"Total created nodes: {Node.next_node_id - 1}")
+        print("-----------------//----------------")
