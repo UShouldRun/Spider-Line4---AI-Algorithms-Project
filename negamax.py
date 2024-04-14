@@ -60,4 +60,3 @@ class Negamax:
     def watch_stats(self, root) -> None:
         print(f"Total explored nodes: {self.nodes_depth}")
         print(f"Total created nodes: {Node.next_node_id - 1}")
-        print("-----------------//----------------")
