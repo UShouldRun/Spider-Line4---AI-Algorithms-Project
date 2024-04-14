@@ -19,7 +19,7 @@ class Board:
 
     def update(self, matrix) -> None: self.matrix = matrix
     def place_piece(self, piece_type: str, move: tuple[int, int]) -> None: self.matrix[move[0],move[1]] = piece_type
-    def set_rect(self, x: int, y: int, width: int, height: int) -> None: pygame.Rect(x,y,width,height)
+    def set_rect(self, x: int, y: int, width: int, height: int) -> None: Rect(x,y,width,height)
 
     @staticmethod
     def place(board, piece_type: str, move: tuple[int, int]) -> None:
@@ -169,5 +169,6 @@ class Node:
     def increase_visits(self, amount: int = 1) -> None: Node.visits[self.get_state()] += amount
     def increase_reward(self, amount: float = 1) -> None: self.reward += amount
 
+    def set_reward(self, reward: int) -> None: self.reward = reward
     def set_action(self, action) -> None: self.action = action
     def set_children(self, children: set) -> None: self.children = children

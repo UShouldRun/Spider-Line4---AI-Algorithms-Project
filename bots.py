@@ -1,5 +1,5 @@
 from random import randint
-from copy import deepcopy
+from mdpfunctions import visualize_ab, visualize_negamax, visualize_montecarlo
 from minimax import AlphaBeta
 from negamax import Negamax
 from montecarlo import MCTS
@@ -11,14 +11,23 @@ class Bot0:
 
 class Bot1(Negamax):
     def __init__(self, board, name: str, depth: int, mdp) -> None:
-        super().__init__(board, depth, mdp)
+        super().__init__(board, 1, depth, mdp)
         self.board, self.name = board, name
     def get_name(self) -> str: return self.name
     def play(self, piece: str) -> None:
+        print(f"{self.get_name()} evaluating...")
+
         self.root_state = self.board
-        self.mdp.action_type = piece
-        root = self.negamax()
-        move = [child for child in root.get_children() if child.get_reward() == root.get_reward()][0].get_action()[1]
+        opponent = "2" if piece == "1" else "1"
+        self.root_sign = -1 if opponent == "1" else 1
+
+        self.mdp.action_type, self.mdp.action_type_opponent = piece, opponent
+
+        root = self.negamax(opponent)
+        best_nodes = [child for child in root.get_children() if child.get_reward() == self.root_sign * root.get_reward()]
+        visualize_negamax(root.get_children(), self.root_sign)
+
+        move = best_nodes[randint(0, len(best_nodes) - 1)].get_action()[1]
         self.board.place_piece(piece, move)
 
 class Bot2(AlphaBeta):
@@ -27,10 +36,15 @@ class Bot2(AlphaBeta):
         self.board, self.name = board, name
     def get_name(self) -> str: return self.name
     def play(self, piece: str) -> None:
+        print(f"{self.get_name()} evaluating...")
+        self.nodes_depth = 0
         self.root_state = self.board
-        self.mdp.action_type = piece
-        root = self.minimax()
-        move = [child for child in root.get_children() if child.get_reward() == root.get_reward()][0].get_action()[1]
+        opponent = "2" if piece == "1" else "1"
+        self.mdp.action_type, self.mdp.action_type_opponent  = piece, opponent 
+        root = self.minimax(opponent)
+        best_nodes = [child for child in root.get_children() if child.get_reward() == root.get_reward()]
+        visualize_ab(root.get_children())
+        move = best_nodes[randint(0,len(best_nodes) - 1)].get_action()[1]
         self.board.place_piece(piece, move)
 
 class Bot3(MCTS):
@@ -40,10 +54,12 @@ class Bot3(MCTS):
         self.name = name
     def get_name(self) -> str: return self.name
     def play(self, piece: str) -> None:
+        print(f"{self.get_name()} evaluating...")
         self.root_state = self.board
-        self.mdp.action_type = piece
-        move = self.uct_select(self.mcts()).get_action()[1]
+        opponent = "2" if piece == "1" else "1"
+        self.mdp.action_type, self.mdp.action_type_opponent = piece, opponent
+        root = self.mcts(opponent)
+        move = self.uct_select(root).get_action()[1]
+        visualize_montecarlo(root.get_children(), self.get_uct_const())
         self.board.place_piece(piece, move)
         self.reset()
-
-

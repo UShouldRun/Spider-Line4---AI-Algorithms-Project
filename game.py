@@ -1,7 +1,7 @@
 from copy import deepcopy
 from settings import *
 from mdp import MDP
-from mdpfunctions import state_analysis, get_actions, execute, qfunction, qfunction1
+from mdpfunctions import state_analysis, get_actions, execute, qfunction, qfunction1, qfunction3, qfunction4
 from bots import Bot0, Bot1, Bot2, Bot3
 from player import Player
 from objects import Board, Button, Clock, Node
@@ -40,17 +40,17 @@ class SpiderLine4:
         self.display_switch = True
 
         def state(node: Node): return state_analysis(node, self.checkWin, self.checkDraw)
-        def actions(node: Node, piece: str): return get_actions(node, piece, self.get_legal_moves)
-        def qfunction2(node: Node): return qfunction(node, self.checkWin, self.checkDraw)
+        def actions(node: Node): return get_actions(node, self.get_legal_moves)
+        def qfunction2(node: Node, opponent: str): return qfunction(node, opponent, self.checkWin, self.checkDraw)
 
         # entities
         mdp = MDP(actions, state, execute, qfunction2)
-        mdp1 = MDP(actions, state, execute, qfunction1)
-        mdp2 = MDP(actions, state, execute, qfunction1)
-        TIME, MAX_NODES, UCT_CONST = 1, 1000, 2
-        MAX_DEPTH = 2
+        mdp1 = MDP(actions, state, execute, qfunction3)
+        mdp2 = MDP(actions, state, execute, qfunction4)
+        TIME, MAX_NODES, UCT_CONST = 1, 1000, 0
+        DEPTH_AB, DEPTH_N = 5, 2
 
-        self.bots = [Bot0(self.board, "Random"), Bot1(self.board, "NegaMax", MAX_DEPTH, mdp2), Bot2(self.board, "MiniMax AlphaBeta", MAX_DEPTH, mdp1), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, UCT_CONST, mdp)]
+        self.bots = [Bot0(self.board, "Random"), Bot1(self.board, "NegaMax", DEPTH_N, mdp2), Bot2(self.board, "MiniMax AlphaBeta", DEPTH_AB, mdp1), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, UCT_CONST, mdp)]
         self.bot1 = 0
         self.bot2 = 1
         self.selected_bot = 0
@@ -366,9 +366,10 @@ class SpiderLine4:
 
     def resize(self) -> None:
         '''Resizes all objects in case the game enters full screen or goes to the default state.'''
-        for obj in self.get_objects():
-            if self.get_full_screen(): obj.setRect(obj.x, obj.y, obj.width * FULL_SCREEN_WIDTH // WIDTH, obj.height * FULL_SCREEN_HEIGHT // HEIGHT)
-            else: obj.setRect(obj.x, obj.y, obj.width * WIDTH // FULL_SCREEN_WIDTH , obj.height * HEIGHT // FULL_SCREEN_HEIGHT )
+        pass
+        # for obj in self.get_objects():
+            # if self.get_full_screen(): obj.setRect(obj.x, obj.y, obj.width * FULL_SCREEN_WIDTH // WIDTH, obj.height * FULL_SCREEN_HEIGHT // HEIGHT)
+            # else: obj.setRect(obj.x, obj.y, obj.width * WIDTH // FULL_SCREEN_WIDTH , obj.height * HEIGHT // FULL_SCREEN_HEIGHT )
 
     def cleanScreen(self) -> None:
         self.screen.fill(BACKGROUND)

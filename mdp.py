@@ -16,27 +16,24 @@ class MDP:
         execute (function): A function that executes an action in the environment and returns the resulting state.
         qfunction (function): A function representing the Q-function used for policy evaluation.
     
-    Attributes:
+    Functions:
         _get_actions (function): A function that returns the possible actions for a given state.
         state_analysis (function): A function that analyzes the state and returns whether it's terminal or not.
         execute (function): A function that executes an action in the environment and returns the resulting state.
         qfunction (function): A function representing the Q-function used for policy evaluation.
         action_type (None or str): Type of action, if any.
-
-    Methods:
-        get_actions(node): Returns the possible actions for a given state.
-        non_terminal(node): Checks if the given state is non-terminal.
     """
     def __init__(self, get_actions, state_analysis, execute, qfunction):
-        self._get_actions = get_actions
+        self.get_actions = get_actions
         self.state_analysis = state_analysis
         self.execute = execute
-        self.qfunction = qfunction
+        self._qfunction = qfunction
         self.action_type = None
+        self.action_type_opponent = None
 
-    def get_actions(self, node):
-        """Returns the possible actions for a given state."""
-        return self._get_actions(node, self.action_type)
+    def qfunction(self, node):
+        try: return self._qfunction(node, self.action_type_opponent, self.action_type)
+        except: return self._qfunction(node, self.action_type_opponent)
 
     def non_terminal(self, node):
         """Checks if the given state is non-terminal."""

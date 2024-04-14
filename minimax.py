@@ -1,40 +1,66 @@
-from objects import Board, Node
+from objects import Node
 
 class AlphaBeta:
     def __init__(self, root, depth: int, mdp) -> None: 
         self.root_state = root
         self.mdp = mdp
         self.depth = depth
+        self.nodes_depth = 0
 
     def get_depth(self) -> int: return self.depth
-    def create_root(self, state, action) -> None: return Node(state, None, action)
+    def create_root(self, state, action) -> Node:
+        return Node(state, None, action)
 
-    def expand(self, node: Node) -> None:
+    def expand(self, node: Node, iteration: int) -> None:
         node.set_children([self.mdp.execute(node,action) for action in self.mdp.get_actions(node)])
-        if not node.get_children(): return
+        if iteration < self.get_depth() - 1:
+            for child in node.get_children():
+                value = float("inf") if iteration % 2 else -float("inf")
+                child.set_reward(value)
 
-    def min_max(self, node: Node, iteration: int) -> None:
-        children_rewards = [self.evaluate(child, iteration + 1) for child in node.get_children()]
-        alpha, beta = -float("inf"), float("inf")
-        for reward in children_rewards:
-            if iteration % 2:
-                if reward > alpha: alpha = reward
-            elif reward < beta: beta = reward
-        node.increase_reward(alpha if iteration % 2 else beta)
-
-    def evaluate(self, node: Node = None, iteration: int = 0):
+    def min_value(self, node: Node, alpha: float, beta: float, iteration: int) -> int:
         if not self.mdp.non_terminal(node):
-            node.reward = float("inf") if node.get_action()[0] == self.mdp.action_type else -float("inf")
+            node.reward = float("inf")
             return node.get_reward()
         if iteration == self.get_depth():
             node.increase_reward(self.mdp.qfunction(node))
+            self.nodes_depth += 1
             return node.get_reward()
-        self.expand(node)
-        self.min_max(node, iteration)
-        if not node.is_root(): return node.get_reward()
+        
+        value = float("inf")
+        self.expand(node, iteration)
+        for child in node.get_children():
+            value = min(value, self.max_value(child, alpha, beta, iteration + 1))
+            # if value <= self.alpha: break
+            beta = min(beta, value)
+            if beta <= alpha: break
 
-    def minimax(self, root: Node = None) -> Node:
-        if root == None: root = self.create_root(self.root_state, (self.mdp.action_type, None))
-        self.expand(root)
-        self.evaluate(root)
+        node.set_reward(value)
+        return node.get_reward()
+    
+    def max_value(self, node: Node, alpha: float, beta: float, iteration: int = 0) -> int | None:
+        if not self.mdp.non_terminal(node):
+            node.reward = -float("inf")
+            return node.get_reward()
+        if iteration == self.get_depth():
+            node.increase_reward(self.mdp.qfunction(node))
+            self.nodes_depth += 1
+            return node.get_reward()
+        
+        value = -float("inf")
+        self.expand(node, iteration)
+        for child in node.get_children():
+            value = max(value, self.min_value(child, alpha, beta, iteration + 1))
+            # if value >= self.beta: break
+            alpha = max(alpha, value)
+            if beta <= alpha: break
+
+        node.set_reward(value)
+        if node.is_root(): return
+        return node.get_reward()
+
+    def minimax(self, root_action: str, root: Node = None) -> Node:
+        if root == None: root = self.create_root(self.root_state, (root_action, None))
+        self.max_value(root, -float("inf"), float("inf"))
+        print(self.nodes_depth)
         return root

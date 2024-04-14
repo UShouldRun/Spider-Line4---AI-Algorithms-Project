@@ -119,9 +119,8 @@ class MCTS:
             node = node1
         return self.mdp.qfunction(node)
 
-    def mcts(self, root: Node = None) -> Node:
-        if root == None: root = self.create_root_node(self.root_state, (self.mdp.action_type, None))
-
+    def mcts(self, root_action: str, root: Node = None) -> Node:
+        if root == None: root = self.create_root_node(self.root_state, (root_action, None))
         self.start = time()
         while self.resources_left(self.get_time(), len(self.get_explored_children().keys())):
             leaf = self.select(root)
