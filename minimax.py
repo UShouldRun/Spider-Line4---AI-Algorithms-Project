@@ -63,7 +63,7 @@ class AlphaBeta:
     def minimax(self, root_action: str, root: Node = None) -> Node:
         if root == None: root = self.create_root(self.root_state, (root_action, None))
         self.max_value(root, -float("inf"), float("inf"))
-        print(self.nodes_depth)
+        self.watch_stats(root)
         return root
 
     def watch_stats(self, root) -> None:
