@@ -48,7 +48,7 @@ class SpiderLine4:
         mdp1 = MDP(actions, state, execute, qfunction3)
         mdp2 = MDP(actions, state, execute, qfunction4)
         TIME, MAX_NODES, UCT_CONST = 1, 1000, 0
-        DEPTH_AB, DEPTH_N = 5, 2
+        DEPTH_AB, DEPTH_N = 4, 2
 
         self.bots = [Bot0(self.board, "Random"), Bot1(self.board, "NegaMax", DEPTH_N, mdp2), Bot2(self.board, "MiniMax AlphaBeta", DEPTH_AB, mdp1), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, UCT_CONST, mdp)]
         self.bot1 = 0
