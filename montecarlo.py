@@ -135,7 +135,6 @@ class MCTS:
     def watch_stats(self, root) -> None:
         print(f"Total explored nodes: {len(self.get_explored_children().keys())}")
         print(f"Total created nodes: {Node.next_node_id - 1}")
-        print("-----------------//----------------")
 
     # def draw_graph(self, root) -> None:
         # # Function to recursively add nodes and edges to the graph
@@ -159,4 +158,3 @@ class MCTS:
             # plt.show()
 
         # draw_tree(root)
-
