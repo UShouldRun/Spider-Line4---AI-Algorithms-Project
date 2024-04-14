@@ -41,6 +41,7 @@ class AlphaBeta:
     def max_value(self, node: Node, alpha: float, beta: float, iteration: int = 0) -> int | None:
         if not self.mdp.non_terminal(node):
             node.reward = -float("inf")
+            self.nodes_depth += 1
             return node.get_reward()
         if iteration == self.get_depth():
             node.increase_reward(self.mdp.qfunction(node))
@@ -64,3 +65,8 @@ class AlphaBeta:
         self.max_value(root, -float("inf"), float("inf"))
         print(self.nodes_depth)
         return root
+
+    def watch_stats(self, root) -> None:
+        print(f"Total explored nodes: {self.nodes_depth}")
+        print(f"Total created nodes: {Node.next_node_id - 1}")
+        print("-----------------//----------------")
