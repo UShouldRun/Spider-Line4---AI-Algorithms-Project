@@ -54,7 +54,7 @@ class Negamax:
         if root == None: root = self.create_root(self.root_state, (root_action, None))
         self.grow_tree(root)
         self.evaluate_tree(root, self.root_sign)
-        self.watch_stats()
+        self.watch_stats(root)
         return root
 
     def watch_stats(self, root) -> None:
