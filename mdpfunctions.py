@@ -95,8 +95,8 @@ def heuristic1(matrix, piece: str, opponent: str, weight: int = 1, player1_weigh
             if entry != "0":
                 heuristic_eval += (-1 if entry == opponent else 1) * (neighbourhood(i,j) + center_prox(i,j) + player_prox(i,j))
 
-    if piece == "1": return round(player1_weight * weight * heuristic_eval, 2)
-    return round(weight * heuristic_eval, 2)
+    if piece == "1": return round(player1_weight * weight * heuristic_eval, 3)
+    return round(weight * heuristic_eval / 10, 3)
 
 def heuristic2(matrix, piece: str, opponent: str, weight: int = 1.5, player1_weight: int = 1.5, neighbourhood_weight: int = 2, center_weight: float = 1, player_prox_weight: float = 10) -> float: 
     rows, cols = len(matrix), len(matrix[0])
@@ -140,8 +140,8 @@ def heuristic2(matrix, piece: str, opponent: str, weight: int = 1.5, player1_wei
             if entry != "0":
                 heuristic_eval += (-1 if entry == opponent else 1) * (neighborhood(i,j) + center_prox(i,j) + player_prox(i,j))
 
-    if piece == "1": return round(abs(player1_weight * weight * heuristic_eval), 2)
-    return round(abs(weight * heuristic_eval), 2)
+    if piece == "1": return round(abs(player1_weight * weight * heuristic_eval)/10, 3)
+    return round(abs(weight * heuristic_eval)/10, 3)
 
 
 def visualize_ab(nodes) -> None:
@@ -154,11 +154,11 @@ def visualize_ab(nodes) -> None:
                 if node.get_action()[1] == (i,j):
                     reward = str(node.get_reward())
                     c = len(reward)
-                    if c < 6: reward = " "*(6 - c) + reward
+                    if c < 7: reward = " "*(7 - c) + reward
                     cols.append(reward)
                     got_it = True
                     break
-            if not got_it: cols.append("------")
+            if not got_it: cols.append("-------")
         rows.append(cols)
     for row in rows: print(row)
 
@@ -172,11 +172,11 @@ def visualize_negamax(nodes, sign: int) -> None:
                 if node.get_action()[1] == (i,j):
                     reward = str(sign * node.get_reward())
                     c = len(reward)
-                    if c < 6: reward = " "*(6 - c) + reward
+                    if c < 7: reward = " "*(7 - c) + reward
                     cols.append(reward)
                     got_it = True
                     break
-            if not got_it: cols.append("------")
+            if not got_it: cols.append("-------")
         rows.append(cols)
     for row in rows: print(row)
 
@@ -205,10 +205,10 @@ def visualize_montecarlo(nodes, uct_const: int) -> None:
                 if node.get_action()[1] == (i,j):
                     eval = str(uct(node))
                     c = len(eval)
-                    if c < 6: eval = " "*(6 - c) + eval
+                    if c < 7: eval = " "*(7 - c) + eval
                     cols.append(eval)
                     got_it = True
                     break
-            if not got_it: cols.append("------")
+            if not got_it: cols.append("-------")
         rows.append(cols)
     for row in rows: print(row)
