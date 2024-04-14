@@ -18,6 +18,7 @@ class Negamax:
         self.depth = depth
         self.mdp = mdp
         self.root_sign = root_sign
+        self.nodes_depth = 0
 
     def create_root(self, state, action) -> Node: return Node(state, None, action)
 
@@ -31,6 +32,7 @@ class Negamax:
             return
         if iteration == self.depth:
             node.increase_reward(self.mdp.qfunction(node))
+            self.nodes_depth += 1
             return
         self.expand(node)
         for child in node.get_children(): self.grow_tree(child, iteration + 1)
@@ -51,4 +53,5 @@ class Negamax:
         if root == None: root = self.create_root(self.root_state, (root_action, None))
         self.grow_tree(root)
         self.evaluate_tree(root, self.root_sign)
+        print(self.nodes_depth)
         return root
