@@ -31,7 +31,6 @@ class AlphaBeta:
         self.expand(node, iteration)
         for child in node.get_children():
             value = min(value, self.max_value(child, alpha, beta, iteration + 1))
-            # if value <= self.alpha: break
             beta = min(beta, value)
             if beta <= alpha: break
 
@@ -52,7 +51,6 @@ class AlphaBeta:
         self.expand(node, iteration)
         for child in node.get_children():
             value = max(value, self.min_value(child, alpha, beta, iteration + 1))
-            # if value >= self.beta: break
             alpha = max(alpha, value)
             if beta <= alpha: break
 
