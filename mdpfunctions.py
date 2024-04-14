@@ -53,7 +53,7 @@ def heuristic(matrix, piece: str):
 
     return score
 
-def heuristic1(matrix, piece: str, opponent: str, weight: int = 1, player1_weight: int = 1.5, center_weight: float = .5, player_prox_weight: float = 1) -> float: 
+def heuristic1(matrix, piece: str, opponent: str, weight: int = 1, player1_weight: int = 1.5, neighbourhood_weight: int = 2, center_weight: float = .5, player_prox_weight: float = 1) -> float: 
     rows, cols = len(matrix), len(matrix[0])
 
     def center_prox(i: int, j: int) -> float: return center_weight * sqrt((rows/2)**2 + (cols/2)**2) - sqrt((rows/2 - i)**2 + (cols/2 - j)**2)
@@ -69,7 +69,7 @@ def heuristic1(matrix, piece: str, opponent: str, weight: int = 1, player1_weigh
         if count > 0: return player_prox_weight / (1 + min_prox) 
         return 0
 
-    def neiborhood(i: int, j: int) -> int:
+    def neighbourhood(i: int, j: int) -> int:
         eval = 0
         directions = [(-1,-1),(-1,0),(0,1),(1,1),(1,0),(0,-1),(1,-1),(-1,1)]
         for vector in directions:
@@ -87,18 +87,18 @@ def heuristic1(matrix, piece: str, opponent: str, weight: int = 1, player1_weigh
                         temp_eval = 0
                         break
             eval += temp_eval
-        return eval
+        return neighbourhood_weight * eval
 
     heuristic_eval = 0
     for i, row in enumerate(matrix):
         for j, entry in enumerate(row):
             if entry != "0":
-                heuristic_eval += (-1 if entry == opponent else 1) * (neiborhood(i,j) + center_prox(i,j) + player_prox(i,j))
+                heuristic_eval += (-1 if entry == opponent else 1) * (neighbourhood(i,j) + center_prox(i,j) + player_prox(i,j))
 
     if piece == "1": return round(player1_weight * weight * heuristic_eval, 2)
     return round(weight * heuristic_eval, 2)
 
-def heuristic2(matrix, piece: str, opponent: str, weight: int = 1.5, player1_weight: int = 1.5, center_weight: float = 1, player_prox_weight: float = 10) -> float: 
+def heuristic2(matrix, piece: str, opponent: str, weight: int = 1.5, player1_weight: int = 1.5, neighbourhood_weight: int = 2, center_weight: float = 1, player_prox_weight: float = 10) -> float: 
     rows, cols = len(matrix), len(matrix[0])
 
     def center_prox(i: int, j: int) -> float: return center_weight * sqrt((rows/2)**2 + (cols/2)**2) - sqrt((rows/2 - i)**2 + (cols/2 - j)**2)
@@ -114,7 +114,7 @@ def heuristic2(matrix, piece: str, opponent: str, weight: int = 1.5, player1_wei
         if count > 0: return player_prox_weight / (1 + min_prox) 
         return 0
 
-    def neiborhood(i: int, j: int) -> int:
+    def neighborhood(i: int, j: int) -> int:
         eval = 0
         directions = [(-1,-1),(-1,0),(0,1),(1,1),(1,0),(0,-1),(1,-1),(-1,1)]
         for vector in directions:
@@ -132,13 +132,13 @@ def heuristic2(matrix, piece: str, opponent: str, weight: int = 1.5, player1_wei
                         temp_eval = 0
                         break
             eval += temp_eval
-        return eval
+        return neighbourhood_weight * eval
 
     heuristic_eval = 0
     for i, row in enumerate(matrix):
         for j, entry in enumerate(row):
             if entry != "0":
-                heuristic_eval += (-1 if entry == opponent else 1) * (neiborhood(i,j) + center_prox(i,j) + player_prox(i,j))
+                heuristic_eval += (-1 if entry == opponent else 1) * (neighborhood(i,j) + center_prox(i,j) + player_prox(i,j))
 
     if piece == "1": return round(abs(player1_weight * weight * heuristic_eval), 2)
     return round(abs(weight * heuristic_eval), 2)
