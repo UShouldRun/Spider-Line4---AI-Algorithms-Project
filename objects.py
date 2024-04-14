@@ -1,6 +1,6 @@
 from pygame import Rect, draw, font, transform
 from copy import deepcopy
-from settings import BUTTON_IMAGE, CLOCK_IMAGE
+from settings import BUTTON_IMAGE, CLOCK_IMAGE,SOUND_IMAGE,SOUND_OFF_IMAGE,COLORS
 from collections import defaultdict
 import numpy as np
 import time, threading
@@ -39,7 +39,6 @@ class Button:
         text = self.text() if type(self.text) != str else self.text
         return self.font.render(text, True, self.font_color)
     def getRect(self): return Rect(self.x, self.y, self.width, self.height)
-    def set_rect(self, x: int, y: int, width: int, height: int) -> None: self.x, self.y, self.width, self.height = x, y, width, height
 
     def isClicked(self, mouse) -> bool: return 0 <= mouse[0] - self.x <= self.width and 0 <= mouse[1] - self.y <= self.height
         
@@ -47,7 +46,19 @@ class Button:
         # draw.rect(self.screen, self.color, self.getRect())
         self.screen.blit(transform.scale(BUTTON_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
+    def draw_sound(self)->None:
+        self.screen.blit(transform.scale(SOUND_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
+        self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
+    def draw_no_sound(self)->None:
+        self.screen.blit(transform.scale(SOUND_OFF_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
+        self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
+    def draw_label(self,turn)->None:
+        if turn=="1":
+            draw.rect(self.screen, COLORS["white"] , self.getRect())
+        else:
+            draw.rect(self.screen, COLORS["black"] , self.getRect())
 
+        self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
 class Clock(): 
     def __init__(self, screen, x: int, y: int, width: int, height: int, color: tuple[int,int,int], font_color: tuple[int,int,int], time: int, text_size: int, _font: str) ->None:
         
@@ -64,6 +75,7 @@ class Clock():
         self.paused = True  
         self.running = False
         self.time = time
+        self.end=False
 
         self.built = False
 
@@ -116,14 +128,15 @@ class Clock():
             minutes = timer // 60  
             self.text = f"{minutes:02}:{seconds:02}"
             time.sleep(1)
-
+            if timer==0: 
+                self.end=True
+                break
+        
     def getSurface(self): return self.font.render(self.text, True, self.font_color)
     def getRect(self): return Rect(self.x, self.y, self.width, self.height)
-    def set_rect(self, x: int, y: int, width: int, height: int) -> None: self.x, self.y, self.width, self.height = x, y, width, height
 
     def draw(self) -> None:
-        # draw.rect(self.screen, self.color, self.getRect())
-        self.screen.blit(transform.scale(CLOCK_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
+        draw.rect(self.screen, self.color, self.getRect())
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
 
 class Node:

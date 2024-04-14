@@ -35,6 +35,7 @@ class MDP:
         try: return self._qfunction(node, self.action_type_opponent, self.action_type)
         except: return self._qfunction(node, self.action_type_opponent)
 
+
     def non_terminal(self, node):
         """Checks if the given state is non-terminal."""
         return not self.state_analysis(node)

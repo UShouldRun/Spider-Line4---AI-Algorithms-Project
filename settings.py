@@ -54,9 +54,12 @@ PLAYER_COLORS = {"1": COLORS["white"],"2": COLORS["black"]}
 
 FPS = 100
 
+
 BG_IMAGE = pygame.transform.scale(pygame.image.load("resources/assets/PNG/UI board Large  parchment.png"), (WIDTH * 1.25, HEIGHT * 1.25))
 BUTTON_IMAGE = pygame.image.load("resources/assets/PNG/TextBTN_Medium.png")
 CLOCK_IMAGE = pygame.image.load("resources/assets/PNG/UI board Small  stone.png")
+SOUND_IMAGE=pygame.image.load("resources/assets/PNG/button_sound_on.png")
+SOUND_OFF_IMAGE=pygame.image.load("resources/assets/PNG/button_sound_off.png")
 
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption(TITLE)

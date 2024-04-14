@@ -1,6 +1,22 @@
 from objects import Node
 
 class AlphaBeta:
+    """ Attributes:
+        root_state: The initial state of the MDP.
+        depth: The depth of the search tree.
+        mdp: The Markov Decision Process (MDP) environment.
+
+    Methods:
+        __init__(root, depth, mdp): Initializes the AlphaBeta object.
+        reset(): Resets the AlphaBeta object.
+        get_depth() -> int: Returns the depth of the search tree.
+        create_root(state, action) -> Node: Creates the root node.
+        expand(node, iteration) -> None: Expands the children of a node at a certain depth.
+        min_value(node, alpha, beta, iteration) -> int: Calculates the minimum value for Alpha-Beta pruning.
+        max_value(node, alpha, beta, iteration) -> int | None: Calculates the maximum value for Alpha-Beta pruning.
+        minimax(root_action, root) -> Node: Executes the Alpha-Beta search from the root node.
+        watch_stats(root) -> None: Prints statistics of the Alpha-Beta search. """
+    
     def __init__(self, root, depth: int, mdp) -> None: 
         self.root_state = root
         self.mdp = mdp
