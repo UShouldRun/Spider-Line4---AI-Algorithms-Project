@@ -3,8 +3,6 @@
 This repository is a project to explore and study the following types of AI algorithms: Minimax,
 Minimax with αβ cuts cuts and Monte Carlo Tree Search playing the game SpiderLine4.
 
- - State: ongoing;
-
 # Download and Project Execution
 To download this repository and explore the code, make sure you have git installed and type in the terminal:
 ```
@@ -37,17 +35,17 @@ left to right and right to left. The first player to connect 4 pieces of their c
 
 # Project's Aim
 
-In this work, the aim is to implement a game for two players and solve different versions of this game,
+In this work, the aim was to implement a game for two players and solve different versions of this game,
 using different AI algorithms. 
 
 Human-human, human-computer and computer-computer game modes are being developed, where the
-computer is going to exhibit different skills (levels of difficulty) by the end of the project.
-Computer performance'll also be compared regarding the different skills (hard, medium, easy),
+computer exhibits different skills (levels of difficulty).
+Computer performance's also compared regarding the different skills (hard, medium, easy),
 corresponding to different evaluation functions, different depth levels of Minimax,
 different successor generation ordering and variants of the Minimax Search
-with αβ cuts, its variants and the Monte Carlo Tree Search algorithms.
+with αβ cuts, Negamax and the Monte Carlo Tree Search algorithms.
 
-We are going to focus on the analysis of the results of the computer players (wins, draws, losses, and other quality
+We focused on the analysis of the results of the computer players (wins, draws, losses, and other quality
 parameters, such as the number of plays to obtain the win/loss) and average time spent and memory usage to obtain the plays.
 
 # Open Source Project Credits
