@@ -7,6 +7,7 @@ import time, threading
 
 class Board:
     def __init__(self, n, m, x, y, width, height) -> None:
+        self.n, self.m = n, m
         self.matrix = np.empty((n,m), dtype = str)
         self.matrix.fill("0")
 
@@ -16,6 +17,13 @@ class Board:
     def get_columns(self) -> int: return self.matrix.shape[1]
     def get_matrix(self): return deepcopy(self.matrix)
     def get_rect(self): return self.rect
+
+    def __eq__(self, other) -> bool:
+        if other == None: return False
+        for i in range(self.n):
+            for j in range(self.m):
+                if self.matrix[i,j] != other.matrix[i,j]: return False
+        return True
 
     def update(self, matrix) -> None: self.matrix = matrix
     def place_piece(self, piece_type: str, move: tuple[int, int]) -> None: self.matrix[move[0],move[1]] = piece_type
@@ -41,27 +49,28 @@ class Button:
     def getRect(self): return Rect(self.x, self.y, self.width, self.height)
 
     def isClicked(self, mouse) -> bool: return 0 <= mouse[0] - self.x <= self.width and 0 <= mouse[1] - self.y <= self.height
-        
+
     def draw(self) -> None:
         # draw.rect(self.screen, self.color, self.getRect())
         self.screen.blit(transform.scale(BUTTON_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
+
     def draw_sound(self)->None:
         self.screen.blit(transform.scale(SOUND_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
+
     def draw_no_sound(self)->None:
         self.screen.blit(transform.scale(SOUND_OFF_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
-    def draw_label(self,turn)->None:
-        if turn=="1":
-            draw.rect(self.screen, COLORS["white"] , self.getRect())
-        else:
-            draw.rect(self.screen, COLORS["black"] , self.getRect())
 
+    def draw_label(self, turn: str)->None:
+        if turn == "1": draw.rect(self.screen, COLORS["white"] , self.getRect())
+        else: draw.rect(self.screen, COLORS["black"] , self.getRect())
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
+
 class Clock(): 
     def __init__(self, screen, x: int, y: int, width: int, height: int, color: tuple[int,int,int], font_color: tuple[int,int,int], time: int, text_size: int, _font: str) ->None:
-        
+
         # display variables
         self.screen = screen
         self.x, self.y = x, y
@@ -128,15 +137,16 @@ class Clock():
             minutes = timer // 60  
             self.text = f"{minutes:02}:{seconds:02}"
             time.sleep(1)
-            if timer==0: 
+            if timer == 0: 
                 self.end=True
                 break
-        
+
     def getSurface(self): return self.font.render(self.text, True, self.font_color)
     def getRect(self): return Rect(self.x, self.y, self.width, self.height)
 
     def draw(self) -> None:
-        draw.rect(self.screen, self.color, self.getRect())
+        # draw.rect(self.screen, self.color, self.getRect())
+        self.screen.blit(transform.scale(BUTTON_IMAGE, (self.getRect().width, self.getRect().height)), (self.getRect().x, self.getRect().y))
         self.screen.blit(self.getSurface(), (self.x + self.width//2 - self.getSurface().get_width()//2, self.y + self.height//2 - self.getSurface().get_height()//2))
 
 class Node:
@@ -155,12 +165,15 @@ class Node:
         self.reward = reward
         self.action = action
 
+        self.terminal = False
+
         self.id = Node.next_node_id
         Node.next_node_id += 1
 
     def __str__(self) -> str: return f"Node (Id/Gen): {self.get_id()}/{self.get_generation()}; State: {self.get_state()}; Parent: {self.get_parent()}; Children: {set([child.get_id() for child in self.get_children()])}; Reward: {self.get_reward()}; Visits: {self.get_visits()}"
 
     def is_root(self) -> bool: return self.get_parent() == None
+    def is_terminal(self) -> bool: return self.terminal
 
     def get_id(self) -> int: return self.id
     def get_visits(self) -> int: return Node.visits[self.get_state()]
@@ -185,3 +198,4 @@ class Node:
     def set_reward(self, reward: int) -> None: self.reward = reward
     def set_action(self, action) -> None: self.action = action
     def set_children(self, children: set) -> None: self.children = children
+    def set_terminal(self, terminal: bool) -> None: self.terminal = terminal

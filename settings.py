@@ -8,9 +8,6 @@ RESIZE_FACTOR = 0.75
 WIDTH, HEIGHT = RESIZE_FACTOR * monitor.width, RESIZE_FACTOR * monitor.height
 TITLE = "SpiderLine4"
 
-SIZE = 50
-MAIN_FONT = pygame.font.SysFont("comic sans", SIZE)
-
 COLORS = {
     'black': (0, 0, 0),
     'white': (255, 255, 255),
@@ -30,7 +27,9 @@ COLORS = {
     'light_gray': (211, 211, 211),
     'dark_gray': (169, 169, 169),
     'light_wood': (220, 192, 139),
+    'wood': (200, 175, 130),
     'dark_wood': (101, 67, 33),
+    'dark_dark_wood': (95, 56, 28),
     'beige': (245, 245, 220)
 }
 
@@ -40,7 +39,7 @@ BUTTON_WIDTH, BUTTON_HEIGHT = WIDTH//4, HEIGHT//5
 BUTTON_COLOR = COLORS["dark_wood"]
 
 FONT_COLOR = COLORS["beige"]
-TEXT_SIZE = int(BUTTON_WIDTH//8)
+TEXT_SIZE = int(BUTTON_WIDTH/10)
 MAIN_FONT = "comic sans"
 
 N, M = 8, 8
@@ -54,12 +53,11 @@ PLAYER_COLORS = {"1": COLORS["white"],"2": COLORS["black"]}
 
 FPS = 100
 
-
 BG_IMAGE = pygame.transform.scale(pygame.image.load("resources/assets/PNG/UI board Large  parchment.png"), (WIDTH * 1.25, HEIGHT * 1.25))
 BUTTON_IMAGE = pygame.image.load("resources/assets/PNG/TextBTN_Medium.png")
 CLOCK_IMAGE = pygame.image.load("resources/assets/PNG/UI board Small  stone.png")
-SOUND_IMAGE=pygame.image.load("resources/assets/PNG/button_sound_on.png")
-SOUND_OFF_IMAGE=pygame.image.load("resources/assets/PNG/button_sound_off.png")
+SOUND_IMAGE = pygame.image.load("resources/assets/PNG/button_sound_on.png")
+SOUND_OFF_IMAGE = pygame.image.load("resources/assets/PNG/button_sound_off.png")
 
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption(TITLE)

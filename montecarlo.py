@@ -38,22 +38,28 @@ class MCTS:
         draw_graph(root) -> None: Draws the tree graph.
     """
 
-    def __init__(self, root, delta_time: int, max_nodes: int, uct_const: int, mdp) -> None:
+    def __init__(self, root, delta_time: int, max_nodes: int, simul_depth: int, uct_const: int, mdp) -> None:
         self.root_state = root
         self.delta_time, self.cp = delta_time, max_nodes
+        self.simul_depth = simul_depth
         self.uct_const = uct_const
         self.mdp = mdp
+
+        self.stop = False
         self.reset()
 
     def reset(self):
         self.explored_children = dict()
         self.start = 0
         Node.reset()
+    def get_stop(self) -> bool: return self.stop
+    def set_stop(self, stop: bool) -> None: self.stop = stop
 
     def get_start(self) -> int: return self.start
     def get_delta_time(self) -> int: return self.delta_time
     def get_time(self) -> int: return time()
     def get_cp(self) -> int: return self.cp
+    def get_simul_depth(self) -> int: return self.simul_depth
     def get_uct_const(self) -> int: return self.uct_const
     def get_explored_children(self) -> dict[Node]: return self.explored_children
 
@@ -102,7 +108,7 @@ class MCTS:
         if node in self.get_explored_children(): return  # already expanded
         if not node.get_children(): node.set_children(self.find_direct_children(node))
         self.explored_children[node] = node.get_children()
-    
+
     def backpropagate(self, node: Node, reward: int) -> None:
         '''Restructure the tree according to the new rewards'''
         node.increase_visits()
@@ -113,10 +119,12 @@ class MCTS:
     def simulate(self, starting_node: Node) -> float:
         '''Simulate a certain universe from a starting branch (node) state'''
         node = self.find_random_direct_child(starting_node)
-        while self.mdp.non_terminal(node):
+        count = 0
+        while self.mdp.non_terminal(node) and count < self.get_simul_depth():
             node1 = self.find_random_direct_child(node)
             if node1 == None: break
             node = node1
+            count += 1
         return self.mdp.qfunction(node)
 
     def mcts(self, root_action: str, root: Node = None) -> Node:
@@ -128,8 +136,9 @@ class MCTS:
                 self.expand(leaf)
                 reward = self.simulate(leaf)
                 self.backpropagate(leaf, reward)
+            if self.get_stop(): return
 
-        # self.watch_stats(root)
+        self.watch_stats(root)
         return root
 
     def watch_stats(self, root) -> None:

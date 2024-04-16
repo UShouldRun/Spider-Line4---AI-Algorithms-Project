@@ -23,10 +23,15 @@ class AlphaBeta:
         self.depth = depth
         self.nodes_depth = 0
 
+        self.stop = False
+
     def reset(self) -> None:
         self.nodes_depth = 0
         Node.reset()
     def get_depth(self) -> int: return self.depth
+    def get_stop(self) -> bool: return self.stop
+    def set_stop(self, stop: bool) -> None: self.stop = stop
+
     def create_root(self, state, action) -> Node:
         return Node(state, None, action)
 
@@ -38,6 +43,8 @@ class AlphaBeta:
                 child.set_reward(value)
 
     def min_value(self, node: Node, alpha: float, beta: float, iteration: int) -> int:
+        if self.get_stop(): return
+
         if not self.mdp.non_terminal(node):
             node.reward = float("inf")
             return node.get_reward()
@@ -45,7 +52,7 @@ class AlphaBeta:
             node.increase_reward(self.mdp.qfunction(node))
             self.nodes_depth += 1
             return node.get_reward()
-        
+
         value = float("inf")
         self.expand(node, iteration)
         for child in node.get_children():
@@ -55,8 +62,9 @@ class AlphaBeta:
 
         node.set_reward(value)
         return node.get_reward()
-    
+
     def max_value(self, node: Node, alpha: float, beta: float, iteration: int = 0) -> int | None:
+        if self.get_stop(): return
         if not self.mdp.non_terminal(node):
             node.reward = -float("inf")
             self.nodes_depth += 1
@@ -65,7 +73,7 @@ class AlphaBeta:
             node.increase_reward(self.mdp.qfunction(node))
             self.nodes_depth += 1
             return node.get_reward()
-        
+
         value = -float("inf")
         self.expand(node, iteration)
         for child in node.get_children():
@@ -77,11 +85,11 @@ class AlphaBeta:
         if node.is_root(): return
         return node.get_reward()
 
-    def minimax(self, root_action: str, root: Node = None) -> Node:
+    def minimax(self, root_action: str, root: Node = None, eval: bool = True) -> Node:
         self.reset()
         if root == None: root = self.create_root(self.root_state, (root_action, None))
         self.max_value(root, -float("inf"), float("inf"))
-        self.watch_stats(root)
+        if eval: self.watch_stats(root)
         return root
 
     def watch_stats(self, root) -> None:

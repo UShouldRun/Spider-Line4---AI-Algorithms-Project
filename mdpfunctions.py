@@ -1,6 +1,6 @@
 from objects import Node, Board
 from copy import deepcopy
-from math import sqrt, log
+from math import sqrt, log, pow, e
 
 def game_state(node: Node, checkWin, checkDraw) -> int:
     if node.is_root(): return False
@@ -10,7 +10,9 @@ def game_state(node: Node, checkWin, checkDraw) -> int:
         if checkDraw(node.get_state().get_matrix()): return 2
     return 0
 
-def state_analysis(node: Node, checkWin, checkDraw) -> bool: return game_state(node, checkWin, checkDraw) != 0
+def state_analysis(node: Node, checkWin, checkDraw) -> bool:
+    node.set_terminal(game_state(node, checkWin, checkDraw) != 0)
+    return node.is_terminal()
 
 def get_actions(node: Node, get_legal_moves) -> list[tuple[str, tuple[int, int]]]:
     piece = "1" if node.get_action()[0] == "2" else "2"
@@ -23,9 +25,16 @@ def execute(node: Node, action) -> Node:
     Board.place(new_state, action[0], action[1])
     return Node(new_state, node, action)
 
-def qfunction(node: Node, opponent: str, checkWin, checkDraw) -> int:
-    if game_state(node, checkWin, checkDraw) == 2: return 0.5
-    return 0 if node.get_action()[0] == opponent else 1
+def qfunction(node: Node, opponent: str, checkWin, checkDraw) -> float:
+    if node.is_terminal():
+        if game_state(node, checkWin, checkDraw) == 2: return 0.5
+        return 0 if node.get_action()[0] == opponent else 1
+    return softmax(qfunction1(node))
+
+def softmax(x: float) -> float:
+    if x == -float("inf"): return 0
+    if x == float("inf"): return 1
+    return 1/(1 + pow(e, -x))
 
 def qfunction1(node: Node) -> float: return heuristic(node.get_state().get_matrix(), "1" if node.get_action()[0] == "2" else "2")
 def qfunction3(node: Node, opponent: str, player: str) -> int: return heuristic1(node.get_state().get_matrix(), opponent if node.get_action()[0] == player else player, opponent)
@@ -53,7 +62,7 @@ def heuristic(matrix, piece: str):
 
     return score
 
-def heuristic1(matrix, piece: str, opponent: str, weight: float = 0.5, player1_weight: float = 1.05, player1_offset: float = .1, neighbourhood_weight: float = 2, center_weight: float = .5, player_prox_weight: float = 1) -> float: 
+def heuristic1(matrix, piece: str, opponent: str, weight: float = 0.5, player1_weight: float = 1.05, player1_offset: float = .1, neighbourhood_weight: float = 5, center_weight: float = .5, player_prox_weight: float = 1) -> float: 
     rows, cols = len(matrix), len(matrix[0])
 
     def center_prox(i: int, j: int) -> float: return center_weight * sqrt((rows/2)**2 + (cols/2)**2) - sqrt((rows/2 - i)**2 + (cols/2 - j)**2)
@@ -203,12 +212,12 @@ def visualize_montecarlo(nodes, uct_const: int) -> None:
             got_it = False
             for node in nodes:
                 if node.get_action()[1] == (i,j):
-                    eval = str(uct(node))
+                    eval = str(round(softmax(uct(node)), 3)) + f"/{round(node.get_reward()/node.get_visits(), 3)}/{node.get_visits()}" 
                     c = len(eval)
-                    if c < 7: eval = " "*(7 - c) + eval
+                    if c < 15: eval = " "*(15 - c) + eval
                     cols.append(eval)
                     got_it = True
                     break
-            if not got_it: cols.append("-------")
+            if not got_it: cols.append("---------------")
         rows.append(cols)
     for row in rows: print(row)

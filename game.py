@@ -1,8 +1,7 @@
-from copy import deepcopy
 from settings import *
 from mdp import MDP
-from mdpfunctions import state_analysis, get_actions, execute, qfunction, qfunction1, qfunction3, qfunction4, heuristic1
-from bots import Bot0, Bot1, Bot2, Bot3
+from mdpfunctions import state_analysis, get_actions, execute, qfunction, qfunction1, qfunction3, qfunction4, heuristic1, softmax
+from bots import Bot0, Bot1, Bot2, Bot3, AlphaBeta
 from player import Player
 from objects import Board, Button, Clock, Node
 
@@ -24,7 +23,6 @@ class SpiderLine4:
         # play button
         self.play_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "PLAY", TEXT_SIZE, MAIN_FONT)
         self.legal_moves_button = Button(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, HEIGHT//16, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, "DISPLAY MOVES", TEXT_SIZE//2, MAIN_FONT)
-        
         self.exit_button = Button(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, BOARD_HEIGHT-HEIGHT//16-BUTTON_HEIGHT//2, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, "EXIT", TEXT_SIZE//2, MAIN_FONT)
         self.back_button = Button(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, BOARD_HEIGHT-HEIGHT//16-BUTTON_HEIGHT//2, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, "BACK", TEXT_SIZE//2, MAIN_FONT)
 
@@ -33,7 +31,6 @@ class SpiderLine4:
         self.timer = 0
 
         #music
-        
         pygame.mixer.music.load("resources/assets/Wii.mp3")
         pygame.mixer.music.play(-1)
 
@@ -51,17 +48,19 @@ class SpiderLine4:
         mdp = MDP(actions, state, execute, qfunction2)
         mdp1 = MDP(actions, state, execute, qfunction3)
         mdp2 = MDP(actions, state, execute, qfunction4)
-        TIME, MAX_NODES, UCT_CONST = 1, 1000, 0
-        DEPTH_AB, DEPTH_N = 3, 2
+        TIME, MAX_NODES = 10, 1000 
+        UCT_CONST = .02 * TIME
+        DEPTH_AB, DEPTH_N, DEPTH_M = 3, 2, 20
         self.mdp1 = MDP(actions, state, execute, qfunction3)
 
-        self.bots = [Bot0(self.board, "Random"), Bot1(self.board, "NegaMax", DEPTH_N, mdp2), Bot2(self.board, "MiniMax", DEPTH_AB, mdp1), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, UCT_CONST, mdp)]
+        self.bots = [Bot1(self.board, "NegaMax", DEPTH_N, mdp2), Bot2(self.board, "MiniMax", DEPTH_AB, mdp1), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, DEPTH_M, UCT_CONST, mdp)]
+        self.eval_bot = AlphaBeta(self.board, 2, mdp2)
         self.bot1 = 0
         self.bot2 = 1
         self.selected_bot = 0
 
-        self.player = Player(self.board, "1")
-        self.opponent = Player(self.board, "2")
+        self.player = Player(self.board, "1", "Player 1")
+        self.opponent = Player(self.board, "2", "Player 2")
         self.users = [self.player, self.opponent]
         self.player1 = self.player # by default the user is the player 1
         self.player2 = self.opponent # by default the second user is the player 2
@@ -81,9 +80,9 @@ class SpiderLine4:
         self.select_bot2_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.text2, TEXT_SIZE, MAIN_FONT)
         self.bot_vs_bot_start_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "START", TEXT_SIZE, MAIN_FONT)
  
-        self.min_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - 2*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.get_bots()[1].get_name(), TEXT_SIZE, MAIN_FONT)
-        self.min_ab_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.get_bots()[2].get_name(), TEXT_SIZE, MAIN_FONT)
-        self.monte_carlo_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.get_bots()[3].get_name(), TEXT_SIZE, MAIN_FONT)
+        self.min_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - 2*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.get_bots()[0].get_name(), TEXT_SIZE, MAIN_FONT)
+        self.min_ab_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.get_bots()[1].get_name(), TEXT_SIZE, MAIN_FONT)
+        self.monte_carlo_button = Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, self.get_bots()[2].get_name(), TEXT_SIZE, MAIN_FONT)
 
         # Clocks
         self.clock1 = Clock(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, HEIGHT//8 + 2*BUTTON_HEIGHT, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, self.get_clock1(), TEXT_SIZE//2, MAIN_FONT)
@@ -92,18 +91,23 @@ class SpiderLine4:
         self.time_option_2= Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "5:00", TEXT_SIZE, MAIN_FONT)
         self.time_option_3=Button(self.screen, WIDTH//2 - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR, FONT_COLOR, "15:00", TEXT_SIZE, MAIN_FONT)
 
-        self.sound = Button(self.screen,WIDTH - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT*2, BUTTON_WIDTH//6, BUTTON_HEIGHT//3, BUTTON_COLOR, FONT_COLOR, "", TEXT_SIZE//2, MAIN_FONT)
-        self.sound_tick=0
+        self.sound = Button(self.screen, WIDTH - BUTTON_WIDTH//2, HEIGHT//2 + BUTTON_HEIGHT*2, BUTTON_WIDTH//6, BUTTON_HEIGHT//3, BUTTON_COLOR, FONT_COLOR, "", TEXT_SIZE//2, MAIN_FONT)
+        self.sound_tick = 0
 
         # Labels
-        self.wlabel_h=BUTTON_HEIGHT*2
-        self.blabel_h=BUTTON_HEIGHT*2
-        self.white_label = Button(self.screen,WIDTH - BUTTON_WIDTH//2, (HEIGHT//4 + BUTTON_HEIGHT//8)-self.wlabel_h, BUTTON_WIDTH//10, self.wlabel_h, BUTTON_COLOR, FONT_COLOR, "", TEXT_SIZE//2, MAIN_FONT)
-        self.black_label = Button(self.screen,WIDTH - BUTTON_WIDTH//2, (HEIGHT//4 + BUTTON_HEIGHT//8)+self.blabel_h, BUTTON_WIDTH//10, self.wlabel_h, BUTTON_COLOR, FONT_COLOR, "", TEXT_SIZE//2, MAIN_FONT)
+        self.wlabel_h = 0
+        self.blabel_h = 0
+        self.white_label = Button(self.screen, self.board.get_rect().x + self.board.get_rect().width + 10, HEIGHT//2, BUTTON_WIDTH//8, HEIGHT//2, BUTTON_COLOR, FONT_COLOR, "", TEXT_SIZE//2, MAIN_FONT)
+        self.black_label = Button(self.screen, self.board.get_rect().x + self.board.get_rect().width + 10, 0, BUTTON_WIDTH//8, HEIGHT//2, BUTTON_COLOR, FONT_COLOR, "", TEXT_SIZE//2, MAIN_FONT)
+        self.eval_font = pygame.font.SysFont(MAIN_FONT, int(self.black_label.width//2))
+        self.previous_board = None
 
+        # Hint
+        self.hint_lable = Button(self.screen, (WIDTH//2 - BOARD_WIDTH//2)//2 - BUTTON_WIDTH//4, HEIGHT//2 - BUTTON_HEIGHT//2, BUTTON_WIDTH//2, BUTTON_HEIGHT//2, BUTTON_COLOR, FONT_COLOR, "HINT", TEXT_SIZE//2, MAIN_FONT)
+        self.hint_istaken = False
 
     def initialize_board(self) -> None:
-        self.board = Board(N,M,WIDTH//2 - BOARD_WIDTH//2, HEIGHT//2 - BOARD_HEIGHT//2, BOARD_WIDTH, BOARD_HEIGHT)
+        self.board = Board(N, M, WIDTH//2 - BOARD_WIDTH//2, HEIGHT//2 - BOARD_HEIGHT//2, BOARD_WIDTH, BOARD_HEIGHT)
         self.game_state = 0
         self.turn = 1
         self.win_player = 0
@@ -115,7 +119,7 @@ class SpiderLine4:
 
         self.clock1.kill()
         self.clock2.kill()
-              
+
     def isRunning(self) -> bool:
         '''Returns True if the current game is still running.'''
         return self.running
@@ -159,10 +163,10 @@ class SpiderLine4:
         return self.selected_bot
     def set_selected_bot(self, bot: int) -> None: self.selected_bot = bot
 
-    def get_minmax(self) -> int: return 1
-    def get_minmax_ab(self) -> int: return 2
-    def get_monte_carlo(self) -> int: return 3
-    
+    def get_minmax(self) -> int: return 0
+    def get_minmax_ab(self) -> int: return 1
+    def get_monte_carlo(self) -> int: return 2
+
     def text1(self) -> str:
         if type(self.get_player1()) == Player and type(self.get_player2()) == Player: return None
         if self.get_player1() != self.player: return self.get_player1().get_name()
@@ -231,8 +235,7 @@ class SpiderLine4:
                         self.mouse_switch()
 
                     elif self.sound.isClicked(self.get_mouse_pos()):
-                        self.sound_tick+=1
-                        self.draw_sound_button()
+                        self.sound_tick += 1
 
             case "game_modes":
                 if self.isMouseClicked():
@@ -241,30 +244,27 @@ class SpiderLine4:
                     elif self.bot_vs_bot_button.isClicked(self.get_mouse_pos()): self.current_state = 5
                     elif self.back_button.isClicked(self.get_mouse_pos()): self.current_state = 0
                     elif self.sound.isClicked(self.get_mouse_pos()):
-                        self.sound_tick+=1
-                        self.draw_sound_button()
+                        self.sound_tick += 1
                     self.mouse_switch()
+
             case "time_menu":
-                
                 if self.isMouseClicked():
                     if self.back_button.isClicked(self.get_mouse_pos()):
-                        self.current_state=1
+                        self.current_state = 1
                     if self.time_option_1.isClicked(self.get_mouse_pos()): 
-                        self.clock1.time=180
-                        self.clock2.time=180
+                        self.clock1.time = 180
+                        self.clock2.time = 180
                         self.current_state = 4
                     elif self.time_option_2.isClicked(self.get_mouse_pos()): 
-                        self.clock1.time=300
-                        self.clock2.time=300
+                        self.clock1.time = 300
+                        self.clock2.time = 300
                         self.current_state = 4
                     elif self.time_option_3.isClicked(self.get_mouse_pos()): 
-                        self.clock1.time=900
-                        self.clock2.time=900
+                        self.clock1.time = 900
+                        self.clock2.time = 900
                         self.current_state = 4
                     elif self.sound.isClicked(self.get_mouse_pos()):
-                        self.sound_tick+=1
-                        self.draw_sound_button()
-                    
+                        self.sound_tick += 1
                     self.mouse_switch()
 
             case "normal":
@@ -272,32 +272,29 @@ class SpiderLine4:
                     self.clock1.start()
                     self.clock2.start()
                 if self.clock1.end:
-                    self.winner=2
-                    self.current_state=2
+                    self.winner = 2
+                    self.current_state = 2
 
                 elif self.clock2.end:
-                    self.winner=1
-                    self.current_state=2
+                    self.winner = 1
+                    self.current_state = 2
 
                 self.set_player1(self.player)
                 self.set_player2(self.opponent)
 
                 if self.isMouseClicked():
                     if self.sound.isClicked(self.get_mouse_pos()):
-                        self.sound_tick+=1
-                        self.draw_sound_button()
+                        self.sound_tick += 1
 
                 match self.get_turn():
                     case 1:
                         self.clock2.pause_switch(True)
                         self.clock1.pause_switch(False)
-                        """ self.draw_hlabels() """
-
+                        self.draw_hlabels()
                     case 2:
                         self.clock1.pause_switch(True)
                         self.clock2.pause_switch(False)
-                        """ self.draw_hlabels() """
-                
+                        self.draw_hlabels()
                 user_input(self.get_turn())
 
             case "vscomp":
@@ -313,25 +310,17 @@ class SpiderLine4:
                         self.set_selected_bot(self.get_monte_carlo())
                         self.current_state = 6
                     elif self.sound.isClicked(self.get_mouse_pos()):
-                        self.sound_tick+=1
-                        self.draw_sound_button()
-                     
-                        
+                        self.sound_tick += 1
                     self.mouse_switch()
 
             case "vscomp_ingame":
-                
-
                 self.set_player2()
-                if self.get_turn() == int(self.get_users()[0].getPiece()): user_input(self.get_turn())
-
                 if self.isMouseClicked():
                     if self.sound.isClicked(self.get_mouse_pos()):
-                        self.sound_tick+=1
-                        self.draw_sound_button()
-                
-                
-                        
+                        self.sound_tick += 1
+                    if self.hint_lable.isClicked(self.get_mouse_pos()):
+                        self.hint_istaken = True
+                if self.get_turn() == int(self.get_users()[0].getPiece()): user_input(self.get_turn())
 
             case "bot_vs_bot":
                 if self.isMouseClicked():
@@ -342,10 +331,8 @@ class SpiderLine4:
                     elif self.bot_vs_bot_start_button.isClicked(self.get_mouse_pos()):
                         self.current_state = 7
                     elif self.back_button.isClicked(self.get_mouse_pos()): self.current_state = 1
-                   
                     elif self.sound.isClicked(self.get_mouse_pos()):
-                        self.sound_tick+=1
-                        self.draw_sound_button()
+                        self.sound_tick += 1
                     self.mouse_switch()
 
                 self.set_player1(self.get_bots(self.get_bot1()))
@@ -358,9 +345,7 @@ class SpiderLine4:
                         self.initialize_board()
                         self.mouse_switch()
                     elif self.sound.isClicked(self.get_mouse_pos()):
-                        self.sound_tick+=1
-                        self.draw_sound_button()
-                    
+                        self.sound_tick += 1
 
                 self.set_player1(self.get_bots(self.get_bot1()))
                 self.set_player2(self.get_bots(self.get_bot2()))
@@ -413,7 +398,7 @@ class SpiderLine4:
     def get_legal_moves(self, board: Board = None) -> list[tuple[int,int]]:
         if board is None: board = self.board
         moves = []
-        
+
         for i in {0, board.get_rows() - 1}:
             for j in range(board.get_columns()):
                 for k in range(0, board.get_rows(), 1):
@@ -434,29 +419,20 @@ class SpiderLine4:
 
         return moves
 
+    def play_bot(self, bot, turn: str) -> None:
+        bot.play(turn)
+        self.check_game_status()
+        turn = 1 if turn == "2" else 2
+        self.set_turn(turn)
+
     def play(self) -> None:
         if self.get_game_state() == 0 and self.get_current_state() in {6,7}:
             match self.get_turn():
                 case 1:
-                    if self.get_player1() != self.player:
-                        try: self.get_player1().play("1", self.get_legal_moves)
-                        except: self.get_player1().play("1")
-                        self.check_game_status()
-                        self.set_turn(2)
-                case 2:
-                    try: self.get_player2().play("2", self.get_legal_moves)
-                    except: self.get_player2().play("2")
-                    self.check_game_status()
-                    self.set_turn(1)
+                    if self.get_player1() != self.player: self.play_bot(self.get_player1(), "1")
+                case 2: self.play_bot(self.get_player2(), "2")
 
     # Draw on the screen section
-
-    def resize(self) -> None:
-        '''Resizes all objects in case the game enters full screen or goes to the default state.'''
-        pass
-        # for obj in self.get_objects():
-            # if self.get_full_screen(): obj.setRect(obj.x, obj.y, obj.width * FULL_SCREEN_WIDTH // WIDTH, obj.height * FULL_SCREEN_HEIGHT // HEIGHT)
-            # else: obj.setRect(obj.x, obj.y, obj.width * WIDTH // FULL_SCREEN_WIDTH , obj.height * HEIGHT // FULL_SCREEN_HEIGHT )
 
     def cleanScreen(self) -> None:
         self.screen.fill(BACKGROUND)
@@ -468,18 +444,18 @@ class SpiderLine4:
         for i in range(self.board.get_rows()):
             for j in range(self.board.get_columns()):
                 x, y = (self.board.get_rect().x + j * SQUARE_SIZE, self.board.get_rect().y + i * SQUARE_SIZE)
-                if (i+j)%2 == 0: pygame.draw.rect(self.screen, SQUARE_COLOR, pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE))
+                if (i+j) % 2 == 0: pygame.draw.rect(self.screen, SQUARE_COLOR, pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE))
                 if self.board.get_matrix()[i,j] != "0": pygame.draw.circle(self.screen, PLAYER_COLORS[self.board.get_matrix()[i,j]], (x + SQUARE_SIZE//2, y + SQUARE_SIZE//2), SQUARE_SIZE//2)
 
     def display_legal_moves(self) -> None:
         for move in self.get_legal_moves():
-            pos = (self.board.get_rect().x + move[1] * SQUARE_SIZE + SQUARE_SIZE//4, self.board.get_rect().y + move[0] * SQUARE_SIZE + SQUARE_SIZE//4)
-            pygame.draw.line(self.screen, COLORS["green"], (pos[0], pos[1]), (pos[0] + SQUARE_SIZE//2, pos[1] + SQUARE_SIZE//2), 5)
-            pygame.draw.line(self.screen, COLORS["green"], (pos[0], pos[1] + SQUARE_SIZE//2), (pos[0] + SQUARE_SIZE//2, pos[1]), 5)
+            center = (self.board.get_rect().x + move[1] * SQUARE_SIZE + SQUARE_SIZE//2, self.board.get_rect().y + move[0] * SQUARE_SIZE + SQUARE_SIZE//2)
+            color = COLORS["dark_dark_wood"] if (move[0] + move[1]) % 2 else COLORS["wood"]
+            pygame.draw.circle(self.screen, color, center, SQUARE_SIZE//4)
 
     def draw_winning_label(self) -> None:
         self.cleanScreen()
-        text = f"PLAYER {self.get_win_player()} WON" if self.get_win_player() != 3 else "DRAW"
+        text = f"{self.get_player1().get_name() if self.get_win_player() == 1 else self.get_player2().get_name()} WON" if self.get_win_player() != 3 else "DRAW"
         label = self.win_font.render(text, True, COLORS["red"])
         self.screen.blit(label, (WIDTH//2 - label.get_width()//2, HEIGHT//2 - label.get_height()//2))
 
@@ -488,17 +464,28 @@ class SpiderLine4:
             self.current_state = 0
             self.initialize_board()
         elif self.timer == self.ticks: self.win_label_clock += 1
-    
-    def draw_hlabels(self) -> None:
-        self.white_label.draw_label("1")
-        self.black_label.draw_label("2")
-        if self.turn==1:
-            print(heuristic1(self.board.get_matrix(),"1","2"))
-            
-        else:
-            print(heuristic1(self.board.get_matrix(),"2","1"))
-            
 
+    def draw_hlabels(self) -> None:
+        if self.board == self.previous_board or self.previous_board == None:
+            self.eval_bot.root_state = self.board
+            root = self.eval_bot.minimax(f"{self.get_turn() % 2 + 1}", None, False)
+            eval = max([child.get_reward() for child in root.get_children()])
+            eval = -eval if self.get_turn() == 2 else eval
+            eval_soft = round(softmax(eval), 1)
+
+            white_height = HEIGHT * eval_soft
+            black_height = HEIGHT - white_height
+
+            self.black_label.height = black_height
+            self.white_label.y = black_height
+            self.white_label.height = white_height
+
+            self.black_label.draw_label("2")
+            self.white_label.draw_label("1")
+            color = COLORS["black"] if black_height < HEIGHT - self.white_label.width//2 - 5 else COLORS["white"]
+            eval_label = self.eval_font.render(f"{round(eval, 1)}", True, color)
+            self.screen.blit(eval_label, (self.white_label.x + eval_label.get_width()//2, HEIGHT - eval_label.get_height() - 5))
+            self.previous_board = self.board
 
     def draw_game_modes_menu(self) -> None:
         self.cleanScreen()
@@ -506,11 +493,9 @@ class SpiderLine4:
         self.hum_vs_bot_button.draw()
         self.bot_vs_bot_button.draw()
         self.back_button.draw()
-        self.draw_sound_button()
 
-    def draw_time_menu(self)->None:
+    def draw_time_menu(self) -> None:
         self.cleanScreen()
-        self.draw_sound_button()
         self.back_button.draw()
         self.time_option_1.draw()
         self.time_option_2.draw()
@@ -518,7 +503,6 @@ class SpiderLine4:
 
     def draw_bot_select_menu(self) -> None:
         self.cleanScreen()
-        self.draw_sound_button()
         self.min_ab_button.draw()
         self.min_button.draw()
         self.monte_carlo_button.draw()
@@ -526,46 +510,38 @@ class SpiderLine4:
 
     def draw_bot_vs_bot_select_menu(self) -> None:
         self.cleanScreen()
-        self.draw_sound_button()
         self.select_bot1_button.draw()
         self.select_bot2_button.draw()
         self.bot_vs_bot_start_button.draw()
         self.back_button.draw()
 
-    def draw_chat(self) -> None: pass
     def draw_clocks(self) -> None:
         self.clock1.draw()
         self.clock2.draw()
 
     def draw_sound_button(self)->None:
-        if self.sound_tick%2==0:
+        if self.sound_tick % 2 == 0:
             self.sound.draw_sound()
-            self.sound_tick=0
+            self.sound_tick = 0
             pygame.mixer.music.unpause()
-
-            
-        elif self.sound_tick==1:
+        elif self.sound_tick == 1:
             pygame.mixer.music.pause()
             self.sound.draw_no_sound()
 
     def draw_main_menu(self) -> None:
         self.cleanScreen()
-        self.draw_sound_button()
         self.play_button.draw()
-
 
     def draw_game(self) -> None:
         self.cleanScreen()
         self.draw_board()
-        self.draw_sound_button()
-        """ self.draw_hlabels() """
+        self.draw_hlabels()
         if self.get_display(): self.display_legal_moves()
         self.legal_moves_button.draw()
 
         if self.get_current_state() == 4: self.draw_clocks()
         self.exit_button.draw()
-
-        self.draw_chat() # needs to be built
+        if not self.hint_istaken and self.get_current_state() == 6: self.hint_lable.draw()
 
     def draw(self) -> None:
         match self.states[self.get_current_state()]:
@@ -576,7 +552,7 @@ class SpiderLine4:
             case "bot_vs_bot": self.draw_bot_vs_bot_select_menu()
             case "time_menu": self.draw_time_menu()
             case _: self.draw_game()
-
+        self.draw_sound_button()
 
     # main function
 
