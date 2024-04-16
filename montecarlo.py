@@ -2,8 +2,6 @@ from objects import Node
 from time import time
 from random import choice
 from math import sqrt, log
-# import networkx as nx
-# import matplotlib.pyplot as plt
 
 class MCTS:
 
@@ -144,26 +142,3 @@ class MCTS:
     def watch_stats(self, root) -> None:
         print(f"Total explored nodes: {len(self.get_explored_children().keys())}")
         print(f"Total created nodes: {Node.next_node_id - 1}")
-
-    # def draw_graph(self, root) -> None:
-        # # Function to recursively add nodes and edges to the graph
-        # print("loading tree...")
-        # def add_nodes_edges(G, node, pos=None, level=0):
-            # if pos is None:
-                # pos = {node.get_id(): (level, 0)}
-
-            # for child in node.get_children():
-                # G.add_edge(node.get_id(), child.get_id())
-                # pos[child.get_id()] = (level + 1, len(G) + 1)
-                # if child.get_generation() < 2:
-                    # add_nodes_edges(G, counter, child, pos, level + 1)
-
-        # # Function to draw the tree graph
-        # def draw_tree(root):
-            # G = nx.DiGraph()
-            # add_nodes_edges(G, root)
-            # pos = nx.spring_layout(G, seed=42)
-            # nx.draw(G, pos, with_labels=True, arrows=True)
-            # plt.show()
-
-        # draw_tree(root)
