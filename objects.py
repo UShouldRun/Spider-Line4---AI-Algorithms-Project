@@ -1,18 +1,18 @@
 from pygame import Rect, draw, font, transform
 from copy import deepcopy
-from settings import BUTTON_IMAGE, CLOCK_IMAGE,SOUND_IMAGE,SOUND_OFF_IMAGE,COLORS
-from collections import defaultdict
+from settings import BUTTON_IMAGE, SOUND_IMAGE, SOUND_OFF_IMAGE, COLORS
 import numpy as np
 import time, threading
 
 class Board:
     def __init__(self, n, m, x, y, width, height) -> None:
         self.n, self.m = n, m
-        self.matrix = np.empty((n,m), dtype = str)
-        self.matrix.fill("0")
-
+        self.set_board()
         self.rect = Rect(x,y,width,height)
 
+    def set_board(self) -> None:
+        self.matrix = np.empty((self.n,self.m), dtype = str)
+        self.matrix.fill("0")
     def get_rows(self) -> int: return self.matrix.shape[0]
     def get_columns(self) -> int: return self.matrix.shape[1]
     def get_matrix(self): return deepcopy(self.matrix)
@@ -84,7 +84,7 @@ class Clock():
         self.paused = True  
         self.running = False
         self.time = time
-        self.end=False
+        self.end = False
 
         self.built = False
 
@@ -138,7 +138,7 @@ class Clock():
             self.text = f"{minutes:02}:{seconds:02}"
             time.sleep(1)
             if timer == 0: 
-                self.end=True
+                self.end = True
                 break
 
     def getSurface(self): return self.font.render(self.text, True, self.font_color)
@@ -151,11 +151,9 @@ class Clock():
 
 class Node:
     next_node_id = 0
-    visits = defaultdict(lambda: 0)
 
     def reset() -> None:
         Node.next_node_id = 0
-        Node.visits = defaultdict(lambda: 0)
 
     def __init__(self, state, parent = None, action = None, reward: float = .0):
         self.state = state
@@ -166,6 +164,7 @@ class Node:
         self.action = action
 
         self.terminal = False
+        self.visits = 0
 
         self.id = Node.next_node_id
         Node.next_node_id += 1
@@ -176,7 +175,7 @@ class Node:
     def is_terminal(self) -> bool: return self.terminal
 
     def get_id(self) -> int: return self.id
-    def get_visits(self) -> int: return Node.visits[self.get_state()]
+    def get_visits(self) -> int: return self.visits
     def get_reward(self) -> float: return self.reward
 
     def get_parent(self): return self.parent
@@ -192,7 +191,7 @@ class Node:
     def get_state(self): return self.state
     def get_action(self): return self.action
 
-    def increase_visits(self, amount: int = 1) -> None: Node.visits[self.get_state()] += amount
+    def increase_visits(self, amount: int = 1) -> None: self.visits += amount
     def increase_reward(self, amount: float = 1) -> None: self.reward += amount
 
     def set_reward(self, reward: int) -> None: self.reward = reward

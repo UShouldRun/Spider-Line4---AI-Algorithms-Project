@@ -29,7 +29,7 @@ class Bot1(Negamax):
         root = self.negamax(opponent)
         if root == None: return
         best_nodes = [child for child in root.get_children() if child.get_reward() == self.root_sign * root.get_reward()]
-        visualize_negamax(root.get_children(), self.root_sign)
+        visualize_negamax(root.get_children(), self.root_sign, self.board.matrix.shape[0])
 
         move = best_nodes[randint(0, len(best_nodes) - 1)].get_action()[1]
         self.board.place_piece(piece, move)
@@ -53,7 +53,7 @@ class Bot2(AlphaBeta):
         if root == None: return
 
         best_nodes = [child for child in root.get_children() if child.get_reward() == root.get_reward()]
-        visualize_ab(root.get_children())
+        visualize_ab(root.get_children(), self.board.matrix.shape[0])
 
         move = best_nodes[randint(0,len(best_nodes) - 1)].get_action()[1]
         self.board.place_piece(piece, move)
@@ -76,6 +76,6 @@ class Bot3(MCTS):
         if root == None: return
         move = self.uct_select(root).get_action()[1]
 
-        visualize_montecarlo(root.get_children(), self.get_uct_const())
+        visualize_montecarlo(root.get_children(), self.get_uct_const(), self.board.matrix.shape[0])
         self.board.place_piece(piece, move)
         self.reset()

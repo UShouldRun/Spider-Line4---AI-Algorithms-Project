@@ -25,11 +25,11 @@ def execute(node: Node, action) -> Node:
     Board.place(new_state, action[0], action[1])
     return Node(new_state, node, action)
 
-def qfunction(node: Node, opponent: str, checkWin, checkDraw) -> float:
+def qfunction(node: Node, opponent: str, player: str, checkWin, checkDraw) -> float:
     if node.is_terminal():
         if game_state(node, checkWin, checkDraw) == 2: return 0.5
         return 0 if node.get_action()[0] == opponent else 1
-    return softmax(qfunction1(node))
+    return softmax(qfunction3(node, opponent, player))
 
 def softmax(x: float) -> float:
     if x == -float("inf"): return 0
@@ -40,12 +40,12 @@ def qfunction1(node: Node) -> float: return heuristic(node.get_state().get_matri
 def qfunction3(node: Node, opponent: str, player: str) -> int: return heuristic1(node.get_state().get_matrix(), opponent if node.get_action()[0] == player else player, opponent)
 def qfunction4(node: Node, opponent: str, player: str) -> int: return heuristic2(node.get_state().get_matrix(), opponent if node.get_action()[0] == player else player, opponent)
 
-def heuristic(matrix, piece: str):
+def heuristic(matrix, piece: str, n: int, m: int):
     score = 0
     directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # direções
 
-    for i in range(8):
-        for j in range(8):
+    for i in range(n):
+        for j in range(m):
             for dx, dy in directions:
                 line = [matrix[i + k * dx][j + k * dy] if 0 <= i + k * dx < 8 and 0 <= j + k * dy < 8 else None for k in range(4)]
                 player_count = line.count(piece)
@@ -153,11 +153,11 @@ def heuristic2(matrix, piece: str, opponent: str, weight: float = .5, player1_we
     return round(abs(weight * heuristic_eval)/10, 3)
 
 
-def visualize_ab(nodes) -> None:
+def visualize_ab(nodes, size: int) -> None:
     rows = []
-    for i in range(8):
+    for i in range(size):
         cols = []
-        for j in range(8):
+        for j in range(size):
             got_it = False
             for node in nodes:
                 if node.get_action()[1] == (i,j):
@@ -171,11 +171,11 @@ def visualize_ab(nodes) -> None:
         rows.append(cols)
     for row in rows: print(row)
 
-def visualize_negamax(nodes, sign: int) -> None:
+def visualize_negamax(nodes, sign: int, size: int) -> None:
     rows = []
-    for i in range(8):
+    for i in range(size):
         cols = []
-        for j in range(8):
+        for j in range(size):
             got_it = False
             for node in nodes:
                 if node.get_action()[1] == (i,j):
@@ -190,7 +190,7 @@ def visualize_negamax(nodes, sign: int) -> None:
     for row in rows: print(row)
 
 
-def visualize_montecarlo(nodes, uct_const: int) -> None:
+def visualize_montecarlo(nodes, uct_const: int, size: int) -> None:
     def uct(node) -> float:
         if node.get_parent().get_visits() == 0: raise ValueError("Parent node has 0 visits")
 
@@ -206,9 +206,9 @@ def visualize_montecarlo(nodes, uct_const: int) -> None:
         return v_i
 
     rows = []
-    for i in range(8):
+    for i in range(size):
         cols = []
-        for j in range(8):
+        for j in range(size):
             got_it = False
             for node in nodes:
                 if node.get_action()[1] == (i,j):
