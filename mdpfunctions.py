@@ -42,7 +42,7 @@ def qfunction4(node: Node, opponent: str, player: str) -> int: return heuristic2
 
 def heuristic(matrix, piece: str, n: int, m: int):
     score = 0
-    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]  # direções
+    directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
 
     for i in range(n):
         for j in range(m):
