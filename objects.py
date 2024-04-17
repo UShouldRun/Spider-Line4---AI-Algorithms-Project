@@ -116,6 +116,7 @@ class Clock():
             self.set_destroyed(True)
             self.run_switch(False)
             self.pause_switch(False)
+            self.end = False
 
     def pause(self):
         while self.is_paused(): time.sleep(1)

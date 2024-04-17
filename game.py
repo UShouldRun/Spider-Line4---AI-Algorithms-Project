@@ -53,7 +53,7 @@ class SpiderLine4:
         mdp2 = MDP(actions, state, execute, qfunction4)
         TIME, MAX_NODES = 4, 1000 
         UCT_CONST = .1 * TIME
-        DEPTH_AB, DEPTH_N, DEPTH_M = 3, 2, 20
+        DEPTH_AB, DEPTH_N, DEPTH_M = 4, 3, 20
         self.mdp1 = MDP(actions, state, execute, qfunction3)
 
         self.bots = [Bot1(self.board, "NegaMax", DEPTH_N, mdp2), Bot2(self.board, "MiniMax", DEPTH_AB, mdp1), Bot3(self.board, "Monte Carlo", TIME, MAX_NODES, DEPTH_M, UCT_CONST, mdp)]
@@ -67,9 +67,10 @@ class SpiderLine4:
         self.users = [self.player, self.opponent]
         self.player1 = self.player # by default the user is the player 1
         self.player2 = self.opponent # by default the second user is the player 2
-        
+
         # winning label
         self.win_label_clock = 0
+        self.win_label_wait = Clock(self.screen, 0, 0, 0, 0, BUTTON_COLOR, FONT_COLOR, 1, TEXT_SIZE, MAIN_FONT)
         self.win_label_limit = 200
         self.win_player = 0
         self.win_font = pygame.font.SysFont(MAIN_FONT, TEXT_SIZE)
@@ -134,7 +135,6 @@ class SpiderLine4:
         self.hint_isgiven = False
         self.hint_counter = 0
         self.hint = None
-
 
     def isRunning(self) -> bool:
         '''Returns True if the current game is still running.'''
@@ -295,13 +295,8 @@ class SpiderLine4:
                 if not self.clock1.is_running() or not self.clock2.is_running():
                     self.clock1.start()
                     self.clock2.start()
-                if self.clock1.end:
-                    self.winner = 2
-                    self.current_state = 2
-
-                elif self.clock2.end:
-                    self.winner = 1
-                    self.current_state = 2
+                if self.clock1.end: self.game_state = 2
+                elif self.clock2.end: self.game_state = 1
 
                 self.set_player1(self.player)
                 self.set_player2(self.opponent)
@@ -314,11 +309,9 @@ class SpiderLine4:
                     case 1:
                         self.clock2.pause_switch(True)
                         self.clock1.pause_switch(False)
-                        self.draw_hlabels()
                     case 2:
                         self.clock1.pause_switch(True)
                         self.clock2.pause_switch(False)
-                        self.draw_hlabels()
                 user_input(self.get_turn())
 
             case "vscomp":
@@ -363,7 +356,7 @@ class SpiderLine4:
                     elif self.sound.isClicked(self.get_mouse_pos()):
                         self.sound_tick += 1
                     self.mouse_switch()
-            
+
             case "bot_vs_bot_ingame":
                 if self.isMouseClicked():
                     if self.exit_button.isClicked(self.get_mouse_pos()):
@@ -377,8 +370,10 @@ class SpiderLine4:
                 self.set_player2(self.get_bots(self.get_bot2()))
 
         if self.get_game_state() != 0:
-            self.current_state = 2
-            self.win_player = self.get_game_state()
+            if self.win_label_wait.end:
+                self.current_state = 2
+                self.win_player = self.get_game_state()
+            elif not self.win_label_wait.is_running(): self.win_label_wait.start()
 
     def get_inputs(self) -> None:
         '''Loops over all pygame events and handles the events.'''
@@ -473,7 +468,7 @@ class SpiderLine4:
                 x, y = (self.board.get_rect().x + j * square_size, self.board.get_rect().y + i * square_size)
                 if (i+j) % 2 == 0: pygame.draw.rect(self.screen, SQUARE_COLOR, pygame.Rect(x, y, square_size, square_size))
                 if self.board.get_matrix()[i,j] != "0": pygame.draw.circle(self.screen, PLAYER_COLORS[self.board.get_matrix()[i,j]], (x + square_size//2, y + square_size//2), square_size//2)
-        
+
         if self.hint_istaken and self.hint_counter < 200:
             if not self.hint_isgiven:
                 self.eval_bot.root_state = self.board
@@ -481,12 +476,12 @@ class SpiderLine4:
                 prodigies = [child for child in root.get_children() if root.get_reward() == child.get_reward()]
                 self.hint = choice(prodigies).get_action()[1]
                 self.hint_isgiven = True
-            
+
             if self.hint != None and self.board.get_matrix()[self.hint[0],self.hint[1]] == "0":
                 x, y = (self.board.get_rect().x + self.hint[1] * square_size, self.board.get_rect().y + self.hint[0] * square_size)
                 pygame.draw.circle(self.screen, COLORS["green"], (x + square_size//2, y + square_size//2), square_size//4)
                 self.hint_counter += 1
-            
+
 
     def display_legal_moves(self) -> None:
         square_size = SQUARE_SIZE * 8 // self.size[0]
@@ -504,6 +499,7 @@ class SpiderLine4:
 
         if self.win_label_clock == self.win_label_limit:
             self.win_label_clock = 0
+            self.win_label_wait.kill()
             self.current_state = 0
             self.initialize_board()
         elif self.timer == self.ticks: self.win_label_clock += 1
