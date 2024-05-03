@@ -1,4 +1,4 @@
-from objects import Node
+from game.objects import Node
 
 class Negamax:
     """

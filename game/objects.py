@@ -1,6 +1,6 @@
 from pygame import Rect, draw, font, transform
 from copy import deepcopy
-from settings import BUTTON_IMAGE, SOUND_IMAGE, SOUND_OFF_IMAGE, COLORS
+from game.settings import BUTTON_IMAGE, SOUND_IMAGE, SOUND_OFF_IMAGE, COLORS
 import numpy as np
 import time, threading
 

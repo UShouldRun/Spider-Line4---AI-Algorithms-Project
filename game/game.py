@@ -1,9 +1,9 @@
-from settings import *
-from mdp import MDP
-from mdpfunctions import state_analysis, get_actions, execute, qfunction, qfunction1, qfunction3, qfunction4, softmax
-from bots import Bot1, Bot2, Bot3, AlphaBeta
-from player import Player
-from objects import Board, Button, Clock, Node
+from game.settings import *
+from algs.mdp import MDP
+from algs.mdpfunctions import state_analysis, get_actions, execute, qfunction, qfunction1, qfunction3, qfunction4, softmax
+from game.bots import Bot1, Bot2, Bot3, AlphaBeta
+from game.player import Player
+from game.objects import Board, Button, Clock, Node
 from copy import deepcopy
 from random import choice
 

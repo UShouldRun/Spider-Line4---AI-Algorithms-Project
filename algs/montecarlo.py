@@ -1,4 +1,4 @@
-from objects import Node
+from game.objects import Node
 from time import time
 from random import choice
 from math import sqrt, log

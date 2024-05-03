@@ -1,8 +1,8 @@
 from random import randint
-from mdpfunctions import visualize_ab, visualize_negamax, visualize_montecarlo
-from minimax import AlphaBeta
-from negamax import Negamax
-from montecarlo import MCTS
+from algs.mdpfunctions import visualize_ab, visualize_negamax, visualize_montecarlo
+from algs.minimax import AlphaBeta
+from algs.negamax import Negamax
+from algs.montecarlo import MCTS
 import threading
 
 class Bot0:

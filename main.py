@@ -1,4 +1,4 @@
-from game import SpiderLine4
+from game.game import SpiderLine4
 
 def main():
     spider_line4 = SpiderLine4()

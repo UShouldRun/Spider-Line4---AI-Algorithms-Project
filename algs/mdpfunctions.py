@@ -1,4 +1,4 @@
-from objects import Node, Board
+from game.objects import Node, Board
 from copy import deepcopy
 from math import sqrt, log, pow, e
 
